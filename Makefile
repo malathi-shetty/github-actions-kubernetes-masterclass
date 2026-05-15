@@ -1,9 +1,39 @@
+# =========================================
+# ENVIRONMENT AUTOMATION
+# Reduce Time To Market (TTM)
+# =========================================
+
+setup:
+	./bootstrap.sh
+	./scripts/setup.sh
+
+bootstrap:
+	./bootstrap.sh
+
+install:
+	./scripts/setup.sh
+
+check:
+	docker --version
+	kubectl version --client
+	kind --version
+
+
+# =========================================
+# EXISTING PROJECT CONFIG
+# =========================================
+
+
+
 CLUSTER  ?= skillpulse
 NAMESPACE ?= skillpulse
 BACKEND_IMAGE  ?= trainwithshubham/skillpulse-backend:latest
 FRONTEND_IMAGE ?= trainwithshubham/skillpulse-frontend:latest
 
-.PHONY: up down build load apply status logs mysql restart
+
+
+
+.PHONY: up down build load apply status logs mysql restart setup bootstrap install check
 
 up: ## One-shot: build images, create cluster, load images, apply manifests
 	$(MAKE) build
