@@ -35,6 +35,13 @@ FRONTEND_IMAGE ?= trainwithshubham/skillpulse-frontend:latest
 
 .PHONY: up down build load apply status logs mysql restart setup bootstrap install check
 
+deploy:
+	kind create cluster --config k8s/kind-config.yaml --name $(CLUSTER) || true
+	$(MAKE) build
+	$(MAKE) load
+	$(MAKE) apply
+	$(MAKE) status
+
 up: ## One-shot: build images, create cluster, load images, apply manifests
 	$(MAKE) build
 	kind create cluster --config k8s/kind-config.yaml --name $(CLUSTER)
@@ -79,3 +86,16 @@ restart: ## Rebuild + reload images, roll backend + frontend
 	kubectl rollout restart deployment/backend deployment/frontend -n $(NAMESPACE)
 	kubectl rollout status  deployment/backend  -n $(NAMESPACE) --timeout=120s
 	kubectl rollout status  deployment/frontend -n $(NAMESPACE) --timeout=60s
+
+
+pods:
+	kubectl get pods -n $(NAMESPACE)
+
+svc:
+	kubectl get svc -n $(NAMESPACE)
+
+nodes:
+	kubectl get nodes
+
+clean:
+	kind delete cluster --name $(CLUSTER)
