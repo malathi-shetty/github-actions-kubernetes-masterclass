@@ -40,7 +40,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: shettymalathi113/skillpulse-frontend:latest
+          image: shettymalathi113/skillpulse-frontend:__TAG__
           imagePullPolicy: IfNotPresent
 
           ports:
