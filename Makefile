@@ -120,7 +120,6 @@ build:
 	docker build -t $(BACKEND_IMAGE) ./backend
 	docker build -t $(FRONTEND_IMAGE) ./frontend
 
-
 load:
 	@echo "================================="
 	@echo "LOAD IMAGES INTO KIND"
@@ -131,7 +130,14 @@ load:
 ingress:
 	@echo "Installing Ingress Controller"
 	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml
+=======
+CLUSTER  ?= skillpulse
+NAMESPACE ?= skillpulse
 
+TAG := $(shell git rev-parse --short HEAD)
+
+BACKEND_IMAGE  ?= shettymalathi113/skillpulse-backend:$(TAG)
+FRONTEND_IMAGE ?= shettymalathi113/skillpulse-frontend:$(TAG)
 
 # =========================================
 # KUBERNETES DEPLOYMENT
@@ -188,6 +194,19 @@ status:
 	@echo "================================="
 	kubectl get pods,svc,endpoints -n $(NAMESPACE)
 
+
+push:
+	docker push $(BACKEND_IMAGE)
+	docker push $(FRONTEND_IMAGE)
+
+apply: ## Apply manifests and wait for rollouts
+	kubectl apply -f k8s/00-namespace.yaml \
+	              -f k8s/10-mysql.yaml \
+	              -f k8s/20-backend.yaml \
+	              -f k8s/30-frontend.yaml
+	kubectl rollout status statefulset/mysql    -n $(NAMESPACE) --timeout=180s
+	kubectl rollout status deployment/backend   -n $(NAMESPACE) --timeout=120s
+	kubectl rollout status deployment/frontend  -n $(NAMESPACE) --timeout=60s
 
 logs:
 	@echo "================================="
