@@ -1,22 +1,96 @@
-# OS
+# =========================================
+# OPERATING SYSTEM FILES
+# =========================================
+
 .DS_Store
 Thumbs.db
 
-# Editor
+
+# =========================================
+# EDITOR / IDE FILES
+# =========================================
+
 .vscode/
 .idea/
 *.swp
 
-# Local env files
+
+# =========================================
+# ENVIRONMENT FILES
+# =========================================
+
 .env
 .env.local
+.env.*
 
-# Logs
+
+# =========================================
+# LOG FILES
+# =========================================
+
 *.log
+logs/
 
-# Local Claude Code guidance
+
+# =========================================
+# TEMPORARY FILES
+# =========================================
+
+tmp/
+temp/
+*.tmp
+
+
+# =========================================
+# DOCKER FILES
+# =========================================
+
+docker-compose.override.yml
+
+
+# =========================================
+# KUBERNETES GENERATED FILES
+# =========================================
+
+*.secret.yaml
+
+
+# =========================================
+# BUILD / BINARY OUTPUTS
+# =========================================
+
+dist/
+build/
+bin/
+
+backend/skillpulse
+
+
+# =========================================
+# TEST / COVERAGE OUTPUTS
+# =========================================
+
+coverage/
+*.out
+
+
+# =========================================
+# NODE MODULES
+# =========================================
+
+node_modules/
+
+
+# =========================================
+# LOCAL AI / TOOLING FILES
+# =========================================
+
 CLAUDE.md
 
-# Intermediate PDF render output (regenerated from .md + .css)
+
+# =========================================
+# GENERATED DOCUMENTATION OUTPUT
+# =========================================
+
 docs/skillpulse-cicd-guide.html
 docs/skillpulse-kubernetes-guide.html
