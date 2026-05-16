@@ -128,6 +128,10 @@ load:
 	kind load docker-image $(BACKEND_IMAGE) --name $(CLUSTER)
 	kind load docker-image $(FRONTEND_IMAGE) --name $(CLUSTER)
 
+ingress:
+	@echo "Installing Ingress Controller"
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml
+
 
 # =========================================
 # KUBERNETES DEPLOYMENT
@@ -145,6 +149,8 @@ apply:
 	kubectl rollout status statefulset/mysql -n $(NAMESPACE) --timeout=180s
 	kubectl rollout status deployment/backend -n $(NAMESPACE) --timeout=120s
 	kubectl rollout status deployment/frontend -n $(NAMESPACE) --timeout=60s
+
+    kubectl apply -f k8s/40-ingress.yaml
 
 
 # =========================================
@@ -170,7 +176,7 @@ up:
 	kind create cluster --name $(CLUSTER)
 	$(MAKE) load
 	$(MAKE) apply
-
+	$(MAKE) ingress
 
 # =========================================
 # MONITORING
