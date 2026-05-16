@@ -1,5 +1,5 @@
 # =========================================
-# SKILLPULSE DEVOPS AUTOMATION
+# SKILLPULSE DEVOPS (LEVEL 2 GITOPS)
 # =========================================
 
 SHELL := /bin/bash
@@ -15,9 +15,8 @@ BACKEND_IMAGE  := $(DOCKERHUB_USERNAME)/skillpulse-backend:$(TAG)
 FRONTEND_IMAGE := $(DOCKERHUB_USERNAME)/skillpulse-frontend:$(TAG)
 
 .PHONY: up down restart clean build build-k8s load push deploy \
-        ingress-install ingress-low-resource ingress-apply \
         argocd-up argocd-bootstrap gitops-init \
-        status pods svc nodes logs restart-k8s clean-k8s
+        status pods svc logs clean-k8s
 
 # =========================
 # LOCAL DEV
@@ -38,9 +37,6 @@ clean:
 # =========================
 # BUILD
 # =========================
-
-build:
-	docker build -t $(APP_NAME) .
 
 build-k8s:
 	docker build -t $(BACKEND_IMAGE) ./backend
@@ -63,7 +59,7 @@ deploy:
 	$(MAKE) build-k8s
 	$(MAKE) load
 	kubectl apply -f k8s/
-	@echo "GitOps Ready (ArgoCD handles rollout)"
+	@echo "GitOps Ready (ArgoCD will sync automatically)"
 
 # =========================
 # ARGOCD
