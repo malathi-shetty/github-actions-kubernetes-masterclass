@@ -9,7 +9,7 @@ on:
       - '**/*.md'
 
 permissions:
-  contents: write   # IMPORTANT FIX
+  contents: write
 
 jobs:
   build-and-push:
@@ -34,7 +34,6 @@ jobs:
           context: ./backend
           push: ${{ vars.DEPLOY_ENABLED == 'true' }}
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-backend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-backend:${{ github.sha }}
 
       - name: Build & Push Frontend
@@ -43,7 +42,6 @@ jobs:
           context: ./frontend
           push: ${{ vars.DEPLOY_ENABLED == 'true' }}
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-frontend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-frontend:${{ github.sha }}
 
       - name: Update Kubernetes manifests (GitOps)
