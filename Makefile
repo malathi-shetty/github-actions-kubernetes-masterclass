@@ -215,8 +215,9 @@ monitoring-delete:
 	helm uninstall monitoring -n $(MONITORING_NAMESPACE)
 
 grafana-port-forward:
-	kubectl port-forward svc/monitoring-grafana \
-	3000:80 -n $(MONITORING_NAMESPACE)
+	kubectl port-forward --address 0.0.0.0 \
+	svc/monitoring-grafana 3000:80 \
+	-n $(MONITORING_NAMESPACE)
 
 grafana-password:
 	@echo ""
