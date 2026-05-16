@@ -108,7 +108,7 @@ ingress-status:
 	kubectl get svc -n ingress-nginx
 
 ingress-apply:
-	kubectl apply -f k8s/ingress.yaml
+	kubectl apply -f k8s/40-ingress.yaml
 
 # =========================================
 # ARGOCD
