@@ -8,14 +8,26 @@ echo "SKILLPULSE ENV SETUP START"
 echo "================================="
 
 # =========================
+# WAIT FOR APT LOCK (CRITICAL FIX)
+# =========================
+
+echo "[INFO] Checking system package lock..."
+
+while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do
+    echo "[WAIT] apt is locked (unattended-upgrades running)... waiting 5s"
+    sleep 5
+done
+
+echo "[INFO] apt is free, continuing..."
+
+# =========================
 # SYSTEM UPDATE
 # =========================
 
-echo "[INFO] Updating system packages..."
 sudo apt update -y
 
 # =========================
-# DOCKER INSTALL (OFFICIAL + SAFE)
+# DOCKER INSTALL (OFFICIAL)
 # =========================
 
 if ! command -v docker &> /dev/null; then
@@ -46,16 +58,16 @@ sudo systemctl enable docker
 sudo systemctl start docker
 
 sudo usermod -aG docker $USER
-echo "[WARN] Run 'newgrp docker' or re-login to apply docker permissions"
+echo "[WARN] Run 'newgrp docker' OR re-login for Docker permissions"
 
 # =========================
-# DOCKER COMPOSE CHECK
+# VERIFY DOCKER COMPOSE (SAFE CHECK)
 # =========================
 
 if docker compose version &> /dev/null; then
     echo "[INFO] Docker Compose already available"
 else
-    echo "[INFO] Docker Compose plugin missing (installing...)"
+    echo "[INFO] Installing Docker Compose plugin..."
     sudo apt-get update
     sudo apt-get install -y docker-compose-plugin
 fi
@@ -65,7 +77,7 @@ fi
 # =========================
 
 if ! command -v kubectl &> /dev/null; then
-    echo "[INFO] Installing kubectl..."
+    echo "[INFO] Installing kubectl"
 
     KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
 
@@ -81,7 +93,7 @@ fi
 # =========================
 
 if ! command -v kind &> /dev/null; then
-    echo "[INFO] Installing kind..."
+    echo "[INFO] Installing kind"
 
     curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
     chmod +x ./kind
@@ -91,12 +103,12 @@ else
 fi
 
 # =========================
-# VERIFY INSTALLATIONS
+# VERIFY TOOLS
 # =========================
 
 echo ""
 echo "========================="
-echo "INSTALLED VERSIONS"
+echo "VERSIONS"
 echo "========================="
 
 docker --version
@@ -104,25 +116,26 @@ kubectl version --client
 kind --version
 
 # =========================
-# CREATE KIND CLUSTER
+# CREATE KIND CLUSTER (SAFE)
 # =========================
 
 if kind get clusters | grep -q "$CLUSTER_NAME"; then
-    echo "[INFO] Cluster '$CLUSTER_NAME' already exists"
+    echo "[INFO] Cluster already exists: $CLUSTER_NAME"
 else
-    echo "[INFO] Creating KIND cluster: $CLUSTER_NAME"
+    echo "[INFO] Creating cluster: $CLUSTER_NAME"
     kind create cluster --name "$CLUSTER_NAME"
 fi
 
 # =========================
-# WAIT FOR READY STATE
+# WAIT FOR CLUSTER READY
 # =========================
 
 echo "[INFO] Waiting for Kubernetes nodes..."
+
 kubectl wait --for=condition=Ready nodes --all --timeout=180s
 
 # =========================
-# FINAL CHECKS
+# FINAL STATUS
 # =========================
 
 echo ""
