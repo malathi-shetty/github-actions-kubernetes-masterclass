@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: trainwithshubham/skillpulse-backend:latest
+          image: your-dockerhub-username/skillpulse-backend:__TAG__
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
