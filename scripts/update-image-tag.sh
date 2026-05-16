@@ -1,17 +1,19 @@
 #!/bin/bash
-
 set -e
 
 TAG=$1
 
 if [ -z "$TAG" ]; then
-  echo "Usage: ./update-image-tag.sh <image-tag>"
+  echo "Usage: ./update-image-tag.sh <tag>"
   exit 1
 fi
 
-echo "Updating Kubernetes manifests with tag: $TAG"
+echo "[INFO] Updating Kubernetes manifests with tag: $TAG"
 
-sed -i "s|__IMAGE_TAG__|$TAG|g" k8s/20-backend.yaml
-sed -i "s|__IMAGE_TAG__|$TAG|g" k8s/30-frontend.yaml
+find k8s -type f -name "*.yaml" -exec sed -i "s|__TAG__|$TAG|g" {} +
 
-echo "Done updating manifests"
+git add k8s
+git commit -m "update image tag to $TAG"
+git push
+
+echo "[SUCCESS] GitOps commit pushed"
