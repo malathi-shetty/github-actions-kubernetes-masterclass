@@ -3,6 +3,7 @@ kind: Application
 metadata:
   name: skillpulse
   namespace: argocd
+
 spec:
   project: default
 
