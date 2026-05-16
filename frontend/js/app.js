@@ -248,6 +248,30 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
+function formatDateTime() {
+    const now = new Date();
+
+    const options = {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+    };
+
+    let formatted = now.toLocaleString('en-GB', options);
+
+    // Convert AM/PM style formatting to match your UI style (optional tweak)
+    formatted = formatted.replace('am', 'A.M').replace('pm', 'P.M');
+
+    return `[${formatted}]`;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("current-datetime").textContent = formatDateTime();
+});
+
 // Close modals on backdrop click
 document.querySelectorAll('.modal-backdrop').forEach(el => {
     el.addEventListener('click', (e) => {
