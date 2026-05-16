@@ -14,21 +14,35 @@ DOCKERHUB_USERNAME ?= shettymalathi113
 BACKEND_IMAGE  := $(DOCKERHUB_USERNAME)/skillpulse-backend:$(TAG)
 FRONTEND_IMAGE := $(DOCKERHUB_USERNAME)/skillpulse-frontend:$(TAG)
 
-.PHONY: build load push deploy up status logs pods svc nodes restart mysql \
+.PHONY: help build load push deploy \
         ingress-install ingress-status ingress-apply ingress-low-resource \
-        argocd-up argocd-bootstrap gitops-init clean cluster-debug
+        argocd-up argocd-bootstrap gitops-init \
+        status logs pods svc nodes cluster-debug \
+        restart mysql clean
 
 # =========================================
 # HELP
 # =========================================
 
 help:
+	@echo ""
+	@echo "Available Commands:"
+	@echo "-------------------"
 	@echo "make build"
+	@echo "make load"
+	@echo "make push"
 	@echo "make deploy"
 	@echo "make ingress-install"
 	@echo "make ingress-apply"
+	@echo "make ingress-status"
+	@echo "make ingress-low-resource"
 	@echo "make argocd-up"
 	@echo "make argocd-bootstrap"
+	@echo "make gitops-init"
+	@echo "make status"
+	@echo "make logs"
+	@echo "make restart"
+	@echo "make clean"
 
 # =========================================
 # BUILD / IMAGE
@@ -60,10 +74,6 @@ deploy:
 # INGRESS
 # =========================================
 
-# =========================================
-# INGRESS
-# =========================================
-
 ingress-install:
 	@echo "Labeling KIND control-plane node for ingress..."
 	kubectl label node $(CLUSTER)-control-plane ingress-ready=true --overwrite
@@ -71,37 +81,31 @@ ingress-install:
 	@echo "Installing ingress-nginx..."
 	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml
 
-# =========================================
-# OPTIONAL:
-# Reduce ingress-nginx resource usage
-# Useful for tiny EC2 instances
-# =========================================
-
-ingress-low-resource:
-	kubectl patch deployment ingress-nginx-controller \
-		-n ingress-nginx \
-		--type='json' \
-		-p='[
-			{
-				"op":"replace",
-				"path":"/spec/template/spec/containers/0/resources",
-				"value":{
-					"requests":{
-						"cpu":"50m",
-						"memory":"90Mi"
-					},
-					"limits":{
-						"memory":"200Mi"
-					}
-				}
-			}
-		]'
-
 	@echo "Waiting for ingress controller..."
 	kubectl wait --namespace ingress-nginx \
 		--for=condition=ready pod \
 		--selector=app.kubernetes.io/component=controller \
 		--timeout=180s
+
+# =========================================
+# OPTIONAL:
+# Reduce ingress-nginx resource usage
+# Useful for small EC2 instances
+# =========================================
+
+ingress-low-resource:
+	@echo "Reducing ingress-nginx resource usage..."
+
+	kubectl patch deployment ingress-nginx-controller \
+		-n ingress-nginx \
+		--type=json \
+		-p='[{"op":"replace","path":"/spec/template/spec/containers/0/resources","value":{"requests":{"cpu":"50m","memory":"90Mi"},"limits":{"memory":"200Mi"}}}]'
+
+	@echo "Restarting ingress controller..."
+	kubectl rollout restart deployment ingress-nginx-controller -n ingress-nginx
+
+	@echo "Waiting for ingress controller..."
+	kubectl rollout status deployment ingress-nginx-controller -n ingress-nginx
 
 ingress-status:
 	kubectl get pods -n ingress-nginx
@@ -136,11 +140,11 @@ argocd-bootstrap:
 # =========================================
 
 gitops-init:
-	$(MAKE) argocd-up
 	$(MAKE) ingress-install
-	$(MAKE) ingress-apply
-	$(MAKE) argocd-bootstrap
 	$(MAKE) ingress-low-resource
+	$(MAKE) argocd-up
+	$(MAKE) argocd-bootstrap
+	$(MAKE) ingress-apply
 
 # =========================================
 # STATUS
