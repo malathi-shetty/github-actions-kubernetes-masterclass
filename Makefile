@@ -5,7 +5,6 @@
 
 SHELL := /bin/bash
 
-
 # =========================================
 # CONFIGURATION
 # =========================================
@@ -13,181 +12,119 @@ SHELL := /bin/bash
 CLUSTER   ?= skillpulse
 NAMESPACE ?= skillpulse
 
-# commit-based tag (dynamic)
-IMAGE_TAG := $(shell git rev-parse --short HEAD)
+TAG := $(shell git rev-parse --short HEAD)
 
-# docker username from login
 DOCKERHUB_USERNAME := $(shell cat ~/.docker/config.json | jq -r '.auths | keys[0]' | cut -d'.' -f1)
 
 ifeq ($(DOCKERHUB_USERNAME),null)
 $(error Docker not logged in. Run: docker login)
 endif
 
-
-BACKEND_IMAGE  := $(DOCKERHUB_USERNAME)/skillpulse-backend:$(IMAGE_TAG)
-FRONTEND_IMAGE := $(DOCKERHUB_USERNAME)/skillpulse-frontend:$(IMAGE_TAG)
-
+BACKEND_IMAGE  := $(DOCKERHUB_USERNAME)/skillpulse-backend:$(TAG)
+FRONTEND_IMAGE := $(DOCKERHUB_USERNAME)/skillpulse-frontend:$(TAG)
 
 # =========================================
-# PHONY TARGETS (FULL COVERAGE)
+# PHONY
 # =========================================
 
-.PHONY: \
-	setup bootstrap install check \
-	help \
-	deploy up build load apply \
-	status logs mysql \
-	restart \
-	pods svc nodes \
-	down clean
-
+.PHONY: setup bootstrap install check build load apply deploy up status logs pods svc nodes restart mysql down clean argocd-up argocd-down argocd-status ingress
 
 # =========================================
 # HELP
 # =========================================
 
 help:
-	@echo "================================="
 	@echo "SkillPulse DevOps Automation"
-	@echo "================================="
-	@echo ""
-	@echo "setup      - full environment setup"
-	@echo "bootstrap  - project structure"
-	@echo "install    - install tools"
-	@echo "check      - verify tools"
-	@echo ""
-	@echo "build      - build images"
-	@echo "load       - load images into kind"
-	@echo "apply      - deploy k8s"
-	@echo "deploy     - full pipeline"
-	@echo ""
-	@echo "status     - cluster health"
-	@echo "logs       - logs"
-	@echo "pods       - pods"
-	@echo "svc        - services"
-	@echo "nodes      - nodes"
-	@echo ""
-	@echo "restart    - restart services"
-	@echo "mysql      - mysql shell"
-	@echo "down       - delete cluster"
-	@echo "clean      - cleanup cluster"
-	@echo ""
-
+	@echo "make setup"
+	@echo "make build"
+	@echo "make deploy"
+	@echo "make argocd-up"
 
 # =========================================
-# SETUP / INSTALL
+# SETUP
 # =========================================
 
 setup:
-	@echo "================================="
-	@echo "FULL ENV SETUP"
-	@echo "================================="
 	./bootstrap.sh
 	./scripts/setup.sh
-
 
 bootstrap:
-	@echo "================================="
-	@echo "BOOTSTRAP PROJECT"
-	@echo "================================="
 	./bootstrap.sh
 
-
 install:
-	@echo "================================="
-	@echo "INSTALL TOOLCHAIN"
-	@echo "================================="
 	./scripts/setup.sh
 
-
 check:
-	@echo "================================="
-	@echo "CHECK TOOLS"
-	@echo "================================="
 	docker --version
 	kubectl version --client
-	kind --version
+	kind version
+
+# =========================================
+# ARGOCD
+# =========================================
 
 argocd-up:
 	@echo "🚀 Installing ArgoCD..."
 	kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 	kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-	@echo "⏳ Waiting for ArgoCD to be ready..."
+	@echo "⏳ Waiting for ArgoCD..."
 	kubectl wait --for=condition=Ready pods --all -n argocd --timeout=300s
-	@echo "🔐 ArgoCD admin password:"
+	@echo "🔐 Password:"
 	kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 	@echo ""
-	@echo "Run: kubectl port-forward svc/argocd-server -n argocd 8080:443"
+	@echo "kubectl port-forward svc/argocd-server -n argocd 8080:443"
+
+argocd-down:
+	kubectl delete namespace argocd
+
+argocd-status:
+	kubectl get pods -n argocd
 
 # =========================================
-# BUILD PIPELINE
+# BUILD
 # =========================================
 
 build:
-	@echo "================================="
-	@echo "BUILD DOCKER IMAGES"
-	@echo "================================="
 	docker build -t $(BACKEND_IMAGE) ./backend
 	docker build -t $(FRONTEND_IMAGE) ./frontend
 
 load:
-	@echo "================================="
-	@echo "LOAD IMAGES INTO KIND"
-	@echo "================================="
 	kind load docker-image $(BACKEND_IMAGE) --name $(CLUSTER)
 	kind load docker-image $(FRONTEND_IMAGE) --name $(CLUSTER)
 
-ingress:
-	@echo "Installing Ingress Controller"
-	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml
-=======
-CLUSTER  ?= skillpulse
-NAMESPACE ?= skillpulse
-
-TAG := $(shell git rev-parse --short HEAD)
-
-BACKEND_IMAGE  ?= shettymalathi113/skillpulse-backend:$(TAG)
-FRONTEND_IMAGE ?= shettymalathi113/skillpulse-frontend:$(TAG)
+push:
+	docker push $(BACKEND_IMAGE)
+	docker push $(FRONTEND_IMAGE)
 
 # =========================================
-# KUBERNETES DEPLOYMENT
+# K8S DEPLOY
 # =========================================
 
 apply:
-	@echo "================================="
-	@echo "DEPLOY K8S RESOURCES"
-	@echo "================================="
-	kubectl apply -f k8s/00-namespace.yaml \
-	              -f k8s/10-mysql.yaml \
-	              -f k8s/20-backend.yaml \
-	              -f k8s/30-frontend.yaml
+	kubectl apply -f k8s/00-namespace.yaml
+	kubectl apply -f k8s/10-mysql.yaml
+	kubectl apply -f k8s/20-backend.yaml
+	kubectl apply -f k8s/30-frontend.yaml
 
 	kubectl rollout status statefulset/mysql -n $(NAMESPACE) --timeout=180s
 	kubectl rollout status deployment/backend -n $(NAMESPACE) --timeout=120s
 	kubectl rollout status deployment/frontend -n $(NAMESPACE) --timeout=60s
 
-    kubectl apply -f k8s/40-ingress.yaml
-
+ingress:
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml
 
 # =========================================
-# MAIN PIPELINES
+# PIPELINES
 # =========================================
 
 deploy:
-	@echo "================================="
-	@echo "FULL DEPLOY PIPELINE"
-	@echo "================================="
 	kind create cluster --name $(CLUSTER) || true
 	$(MAKE) build
 	$(MAKE) load
 	$(MAKE) apply
 	$(MAKE) status
 
-
 up:
-	@echo "================================="
-	@echo "UP STACK"
-	@echo "================================="
 	$(MAKE) build
 	kind create cluster --name $(CLUSTER)
 	$(MAKE) load
@@ -195,81 +132,42 @@ up:
 	$(MAKE) ingress
 
 # =========================================
-# MONITORING
+# STATUS
 # =========================================
 
 status:
-	@echo "================================="
-	@echo "CLUSTER STATUS"
-	@echo "================================="
 	kubectl get pods,svc,endpoints -n $(NAMESPACE)
 
-
-push:
-	docker push $(BACKEND_IMAGE)
-	docker push $(FRONTEND_IMAGE)
-
-apply: ## Apply manifests and wait for rollouts
-	kubectl apply -f k8s/00-namespace.yaml \
-	              -f k8s/10-mysql.yaml \
-	              -f k8s/20-backend.yaml \
-	              -f k8s/30-frontend.yaml
-	kubectl rollout status statefulset/mysql    -n $(NAMESPACE) --timeout=180s
-	kubectl rollout status deployment/backend   -n $(NAMESPACE) --timeout=120s
-	kubectl rollout status deployment/frontend  -n $(NAMESPACE) --timeout=60s
-
 logs:
-	@echo "================================="
-	@echo "STREAM LOGS"
-	@echo "================================="
 	kubectl logs -n $(NAMESPACE) -l app --tail=50 -f
-
 
 pods:
 	kubectl get pods -n $(NAMESPACE)
 
-
 svc:
 	kubectl get svc -n $(NAMESPACE)
 
-
 nodes:
 	kubectl get nodes
-
 
 # =========================================
 # OPERATIONS
 # =========================================
 
 restart:
-	@echo "================================="
-	@echo "RESTART SERVICES"
-	@echo "================================="
 	$(MAKE) build
 	$(MAKE) load
 	kubectl rollout restart deployment/backend deployment/frontend -n $(NAMESPACE)
 
-
 mysql:
-	@echo "================================="
-	@echo "MYSQL SHELL"
-	@echo "================================="
-	kubectl exec -it -n $(NAMESPACE) mysql-0 -- mysql -u$(DB_USER) -p$(DB_PASSWORD) skillpulse
-
+	kubectl exec -it -n $(NAMESPACE) mysql-0 -- mysql -uroot -prootpassword123 skillpulse
 
 # =========================================
 # CLEANUP
 # =========================================
 
 down:
-	@echo "================================="
-	@echo "DELETE CLUSTER"
-	@echo "================================="
 	kind delete cluster --name $(CLUSTER)
 
-
 clean:
-	@echo "================================="
-	@echo "CLEAN ENV"
-	@echo "================================="
 	kind delete cluster --name $(CLUSTER)
