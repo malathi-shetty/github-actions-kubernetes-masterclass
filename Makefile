@@ -15,8 +15,8 @@ BACKEND_IMAGE  := $(DOCKERHUB_USERNAME)/skillpulse-backend:$(TAG)
 FRONTEND_IMAGE := $(DOCKERHUB_USERNAME)/skillpulse-frontend:$(TAG)
 
 .PHONY: build load push deploy up status logs pods svc nodes restart mysql \
-        ingress-install ingress-apply argocd-up argocd-bootstrap \
-        gitops-init clean cluster-debug
+        ingress-install ingress-status ingress-apply ingress-low-resource \
+        argocd-up argocd-bootstrap gitops-init clean cluster-debug
 
 # =========================================
 # HELP
@@ -71,7 +71,13 @@ ingress-install:
 	@echo "Installing ingress-nginx..."
 	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml
 
-	@echo "Reducing ingress controller resource usage..."
+# =========================================
+# OPTIONAL:
+# Reduce ingress-nginx resource usage
+# Useful for tiny EC2 instances
+# =========================================
+
+ingress-low-resource:
 	kubectl patch deployment ingress-nginx-controller \
 		-n ingress-nginx \
 		--type='json' \
@@ -111,8 +117,8 @@ ingress-apply:
 argocd-up:
 	kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 
-    kubectl apply --server-side -n argocd \
-  -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+	kubectl apply --server-side -n argocd \
+		-f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 	kubectl wait \
 		--for=condition=Ready \
@@ -134,6 +140,7 @@ gitops-init:
 	$(MAKE) ingress-install
 	$(MAKE) ingress-apply
 	$(MAKE) argocd-bootstrap
+	$(MAKE) ingress-low-resource
 
 # =========================================
 # STATUS
