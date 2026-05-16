@@ -17,7 +17,7 @@ FRONTEND_IMAGE := $(DOCKERHUB_USERNAME)/skillpulse-frontend:$(TAG)
 APP_NAME=skillpulse
 
 # =========================================
-# LOCAL DEV
+# LOCAL DEV (OPTIONAL)
 # =========================================
 
 up:
@@ -33,7 +33,7 @@ clean:
 	docker system prune -f
 
 # =========================================
-# BUILD
+# BUILD IMAGES
 # =========================================
 
 build:
@@ -52,18 +52,14 @@ push:
 	docker push $(FRONTEND_IMAGE)
 
 # =========================================
-# DEPLOY
+# GITOPS DEPLOY (ARGOCD HANDLES ACTUAL DEPLOYMENT)
 # =========================================
 
 deploy:
-	kind create cluster --name $(CLUSTER) || true
-	$(MAKE) build-k8s
-	$(MAKE) load
-	kubectl apply -f k8s/
-	@echo "Deployed: $(TAG)"
+	@echo "GitOps enabled — ArgoCD handles deployment automatically"
 
 # =========================================
-# INGRESS
+# INGRESS (LOCAL KIND ONLY)
 # =========================================
 
 ingress-install:
@@ -108,7 +104,7 @@ gitops-init:
 	$(MAKE) ingress-apply
 
 # =========================================
-# STATUS
+# STATUS / DEBUG
 # =========================================
 
 status:
@@ -125,16 +121,6 @@ nodes:
 
 logs:
 	kubectl logs -n $(NAMESPACE) -l app --tail=100 -f
-
-# =========================================
-# OPERATIONS
-# =========================================
-
-restart:
-	kubectl rollout restart deployment/backend deployment/frontend -n $(NAMESPACE)
-
-mysql:
-	kubectl exec -it -n $(NAMESPACE) mysql-0 -- mysql -uroot -prootpassword123 skillpulse
 
 # =========================================
 # CLEAN K8S
