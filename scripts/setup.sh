@@ -4,42 +4,41 @@ set -e
 CLUSTER_NAME="three-tier-cluster"
 
 echo "================================="
-echo "SKILLPULSE ENV SETUP START"
+echo "SKILLPULSE SELF-HEALING BOOTSTRAP"
 echo "================================="
 
 # =========================
-# WAIT FOR APT LOCK (CRITICAL FIX)
+# APT LOCK HANDLER (CRITICAL)
 # =========================
 
-echo "[INFO] Checking system package lock..."
+echo "[INFO] Checking system locks..."
 
 while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do
-    echo "[WAIT] apt is locked (unattended-upgrades running)... waiting 5s"
+    echo "[WAIT] apt locked (unattended upgrades running)... sleeping"
     sleep 5
 done
 
-echo "[INFO] apt is free, continuing..."
+echo "[INFO] apt is free"
 
 # =========================
-# SYSTEM UPDATE
+# BASE SYSTEM UPDATE
 # =========================
 
-sudo apt update -y
+sudo apt-get update -y
 
 # =========================
-# DOCKER INSTALL (OFFICIAL)
+# FIX BROKEN / MISSING REPOS (IMPORTANT)
 # =========================
 
-if ! command -v docker &> /dev/null; then
-    echo "[INFO] Installing Docker..."
+if ! apt-cache policy docker-ce | grep -q "Candidate"; then
+    echo "[INFO] Docker repo missing or broken. Fixing..."
 
-    sudo apt-get update
     sudo apt-get install -y ca-certificates curl gnupg
 
     sudo install -m 0755 -d /etc/apt/keyrings
 
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
-        sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 
     echo \
     "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
@@ -48,8 +47,15 @@ if ! command -v docker &> /dev/null; then
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
     sudo apt-get update
-    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+fi
 
+# =========================
+# DOCKER INSTALL
+# =========================
+
+if ! command -v docker &> /dev/null; then
+    echo "[INFO] Installing Docker..."
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 else
     echo "[INFO] Docker already installed"
 fi
@@ -58,16 +64,15 @@ sudo systemctl enable docker
 sudo systemctl start docker
 
 sudo usermod -aG docker $USER
-echo "[WARN] Run 'newgrp docker' OR re-login for Docker permissions"
+echo "[WARN] Run 'newgrp docker' or re-login for Docker access"
 
 # =========================
-# VERIFY DOCKER COMPOSE (SAFE CHECK)
+# FORCE FIX COMPOSE (IMPORTANT FOR YOUR CASE)
 # =========================
 
-if docker compose version &> /dev/null; then
-    echo "[INFO] Docker Compose already available"
-else
-    echo "[INFO] Installing Docker Compose plugin..."
+if ! docker compose version &> /dev/null; then
+    echo "[INFO] docker compose missing — forcing install..."
+
     sudo apt-get update
     sudo apt-get install -y docker-compose-plugin
 fi
@@ -108,29 +113,28 @@ fi
 
 echo ""
 echo "========================="
-echo "VERSIONS"
+echo "VERSION CHECK"
 echo "========================="
 
 docker --version
+docker compose version || echo "[WARN] compose still missing"
 kubectl version --client
 kind --version
 
 # =========================
-# CREATE KIND CLUSTER (SAFE)
+# KIND CLUSTER SAFE CREATE
 # =========================
 
 if kind get clusters | grep -q "$CLUSTER_NAME"; then
-    echo "[INFO] Cluster already exists: $CLUSTER_NAME"
+    echo "[INFO] Cluster already exists"
 else
-    echo "[INFO] Creating cluster: $CLUSTER_NAME"
+    echo "[INFO] Creating KIND cluster: $CLUSTER_NAME"
     kind create cluster --name "$CLUSTER_NAME"
 fi
 
 # =========================
 # WAIT FOR CLUSTER READY
 # =========================
-
-echo "[INFO] Waiting for Kubernetes nodes..."
 
 kubectl wait --for=condition=Ready nodes --all --timeout=180s
 
@@ -147,5 +151,5 @@ kubectl cluster-info
 kubectl get nodes
 
 echo "================================="
-echo "SETUP COMPLETE SUCCESSFULLY"
+echo "BOOTSTRAP COMPLETE (ZERO TOUCH READY)"
 echo "================================="
