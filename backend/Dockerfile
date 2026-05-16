@@ -3,11 +3,18 @@ FROM golang:1.26-alpine AS builder
 
 WORKDIR /app
 
-COPY . .
-RUN go mod tidy && CGO_ENABLED=0 GOOS=linux go build -o skillpulse .
+# Copy dependency files first
+COPY go.mod go.sum ./
 
-# Stage 2: Run
-FROM alpine:3.23
+RUN go mod download
+
+# Copy remaining source
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o skillpulse .
+
+# Stage 2: Runtime
+FROM gcr.io/distroless/static
 
 RUN apk --no-cache add ca-certificates
 
