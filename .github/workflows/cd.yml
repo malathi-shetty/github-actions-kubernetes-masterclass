@@ -17,8 +17,11 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
           script: |
             set -e
+
+            echo "Cloning / Updating repo..."
 
             if [ ! -d ~/skillpulse ]; then
               git clone ${{ github.server_url }}/${{ github.repository }}.git ~/skillpulse
@@ -27,11 +30,33 @@ jobs:
             cd ~/skillpulse
             git pull origin main
 
+            echo "Checking environment..."
+
             if [ ! -f .env ]; then
               echo "ERROR: .env missing"
               exit 1
             fi
 
+            if ! grep -q "DB_HOST" .env; then
+              echo "ERROR: .env invalid (missing DB_HOST)"
+              exit 1
+            fi
+
+            echo "Deploying containers..."
+
             docker compose pull
             docker compose up -d
+
+            echo "Container status:"
+            docker ps
+
+            echo "Backend logs (last 20 lines):"
+            CONTAINER_ID=$(docker ps -q --filter name=backend || true)
+            if [ -n "$CONTAINER_ID" ]; then
+              docker logs --tail=20 $CONTAINER_ID || true
+            else
+              echo "Backend container not found"
+            fi
+
+            echo "Cleaning unused images..."
             docker image prune -f
