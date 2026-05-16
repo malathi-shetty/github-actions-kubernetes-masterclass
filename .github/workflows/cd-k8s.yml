@@ -19,23 +19,36 @@ jobs:
         with:
           ref: main
 
+      # =========================================
+      # SET ENV VARIABLES (SAFE + CORRECT)
+      # =========================================
       - name: Set variables
         run: |
           set -e
+
           SHA=${{ github.event.workflow_run.head_sha }}
           echo "SHA=$SHA" >> $GITHUB_ENV
           echo "SHORT_SHA=${SHA:0:7}" >> $GITHUB_ENV
 
+      # =========================================
+      # VALIDATE DOCKER USER (CLEAN SEPARATION)
+      # =========================================
       - name: Validate Docker user
         env:
           DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
+          set -e
+
           if [ -z "$DOCKER_USER" ]; then
             echo "ERROR: DOCKERHUB_USERNAME missing"
             exit 1
           fi
+
           echo "Docker user OK: $DOCKER_USER"
 
+      # =========================================
+      # PIN IMAGES (GITOPS MANIFEST UPDATE)
+      # =========================================
       - name: Pin backend + frontend images to commit SHA
         env:
           DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -47,6 +60,9 @@ jobs:
           sed -i "s|image: .*skillpulse-backend:.*|image: ${DOCKER_USER}/skillpulse-backend:${SHA}|" k8s/20-backend.yaml
           sed -i "s|image: .*skillpulse-frontend:.*|image: ${DOCKER_USER}/skillpulse-frontend:${SHA}|" k8s/30-frontend.yaml
 
+      # =========================================
+      # VALIDATE KUBERNETES YAML (SAFETY CHECK)
+      # =========================================
       - name: Verify Kubernetes manifests (dry-run)
         run: |
           echo "Validating Kubernetes YAML before commit..."
@@ -57,8 +73,13 @@ jobs:
             echo "kubectl not installed in runner - skipping validation"
           fi
 
+      # =========================================
+      # COMMIT & PUSH BACK TO GIT
+      # =========================================
       - name: Commit & Push changes
         run: |
+          set -e
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
