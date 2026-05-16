@@ -1,61 +1,107 @@
 #!/bin/bash
 
-echo "==============================="
+set -e
+
+CLUSTER_NAME="three-tier-cluster"
+
+echo "================================="
+echo "SKILLPULSE ENV SETUP START"
+echo "================================="
+
+
+# =========================
+# UPDATE SYSTEM
+# =========================
+
 echo "Updating packages"
-echo "==============================="
 sudo apt update -y
 
-echo "==============================="
-echo "Installing Docker"
-echo "==============================="
-sudo apt install docker.io -y
 
-echo "==============================="
-echo "Starting Docker"
-echo "==============================="
+# =========================
+# DOCKER
+# =========================
+
+if ! command -v docker &> /dev/null
+then
+    echo "Installing Docker"
+    sudo apt install docker.io -y
+else
+    echo "Docker already installed"
+fi
+
 sudo systemctl start docker
 sudo systemctl enable docker
 
-echo "==============================="
-echo "Giving Docker permissions"
-echo "==============================="
 sudo usermod -aG docker $USER
 
-echo "==============================="
-echo "Installing kubectl"
-echo "==============================="
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+echo "Docker permission set (run: newgrp docker)"
 
-chmod +x kubectl
 
-sudo mv kubectl /usr/local/bin/
+# =========================
+# KUBECTL
+# =========================
 
-echo "==============================="
-echo "Installing kind"
-echo "==============================="
-curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
+if ! command -v kubectl &> /dev/null
+then
+    echo "Installing kubectl"
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x kubectl
+    sudo mv kubectl /usr/local/bin/
+else
+    echo "kubectl already installed"
+fi
 
-chmod +x ./kind
 
-sudo mv ./kind /usr/local/bin/kind
+# =========================
+# KIND
+# =========================
 
-echo "==============================="
-echo "Versions"
-echo "==============================="
+if ! command -v kind &> /dev/null
+then
+    echo "Installing kind"
+    curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
+    chmod +x ./kind
+    sudo mv ./kind /usr/local/bin/kind
+else
+    echo "kind already installed"
+fi
+
+
+# =========================
+# VERSIONS
+# =========================
+
+echo "Docker:"
 docker --version
+
+echo "kubectl:"
 kubectl version --client
+
+echo "kind:"
 kind --version
 
-echo "==============================="
-echo "Creating Kubernetes Cluster"
-echo "==============================="
-kind create cluster --name three-tier-cluster
 
-echo "==============================="
-echo "Cluster Info"
-echo "==============================="
+# =========================
+# CLUSTER SAFE CREATE
+# =========================
+
+if kind get clusters | grep -q "$CLUSTER_NAME"
+then
+    echo "Cluster already exists"
+else
+    echo "Creating cluster"
+    kind create cluster --name "$CLUSTER_NAME"
+fi
+
+
+# =========================
+# VERIFY
+# =========================
+
 kubectl cluster-info
+kubectl get nodes
 
-echo "==============================="
-echo "Done"
-echo "==============================="
+
+echo "================================="
+echo "SETUP COMPLETE"
+echo "================================="
