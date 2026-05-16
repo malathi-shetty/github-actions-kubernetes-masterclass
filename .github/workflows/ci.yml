@@ -44,7 +44,15 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-frontend:${{ github.sha }}
 
-      - name: GitOps Update (DISABLED - ArgoCD Image Updater)
+      - name: GitOps Update
         if: ${{ vars.DEPLOY_ENABLED == 'true' }}
         run: |
-          echo "CI completed. Deployment handled by ArgoCD Image Updater."
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          sed -i "s|__TAG__|${{ github.sha }}|g" k8s/backend-deployment.yaml
+          sed -i "s|__TAG__|${{ github.sha }}|g" k8s/frontend-deployment.yaml
+
+          git add k8s
+          git commit -m "chore: update image tag ${{ github.sha }}" || echo "No changes"
+          git push
