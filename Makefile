@@ -15,7 +15,8 @@ BACKEND_IMAGE  := $(DOCKERHUB_USERNAME)/skillpulse-backend:$(TAG)
 FRONTEND_IMAGE := $(DOCKERHUB_USERNAME)/skillpulse-frontend:$(TAG)
 
 .PHONY: build load push deploy up status logs pods svc nodes restart mysql \
-        ingress-install ingress-apply argocd-up argocd-app gitops-init clean cluster-debug
+        ingress-install ingress-apply argocd-up argocd-bootstrap \
+        gitops-init clean cluster-debug
 
 # =========================================
 # HELP
@@ -27,7 +28,7 @@ help:
 	@echo "make ingress-install"
 	@echo "make ingress-apply"
 	@echo "make argocd-up"
-	@echo "make argocd-app"
+	@echo "make argocd-bootstrap"
 
 # =========================================
 # BUILD / IMAGE
@@ -46,7 +47,7 @@ push:
 	docker push $(FRONTEND_IMAGE)
 
 # =========================================
-# DEPLOY (LOCAL TEST ONLY - NOT ARGOCD)
+# DEPLOY (LOCAL TEST ONLY)
 # =========================================
 
 deploy:
@@ -56,14 +57,21 @@ deploy:
 	@echo "Cluster ready"
 
 # =========================================
-# INGRESS (IMPORTANT FIX)
+# INGRESS
 # =========================================
 
-# 1. Install ingress controller (nginx inside cluster)
 ingress-install:
-	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 
-# 2. Apply YOUR ingress rules (app routing)
+	kubectl wait --namespace ingress-nginx \
+		--for=condition=ready pod \
+		--selector=app.kubernetes.io/component=controller \
+		--timeout=180s
+
+ingress-status:
+	kubectl get pods -n ingress-nginx
+	kubectl get svc -n ingress-nginx
+
 ingress-apply:
 	kubectl apply -f k8s/ingress.yaml
 
@@ -73,18 +81,30 @@ ingress-apply:
 
 argocd-up:
 	kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
-	kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-	kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
+
+	kubectl apply -n argocd \
+		-f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+	kubectl wait \
+		--for=condition=Ready \
+		pod \
+		-l app.kubernetes.io/name=argocd-server \
+		-n argocd \
+		--timeout=300s
 
 argocd-bootstrap:
 	kubectl apply -f k8s/argocd/project.yaml
 	kubectl apply -f k8s/argocd/application.yaml
 
+# =========================================
+# FULL GITOPS BOOTSTRAP
+# =========================================
+
 gitops-init:
 	$(MAKE) argocd-up
-	$(MAKE) argocd-app
 	$(MAKE) ingress-install
 	$(MAKE) ingress-apply
+	$(MAKE) argocd-bootstrap
 
 # =========================================
 # STATUS
@@ -117,7 +137,8 @@ restart:
 	kubectl rollout restart deployment/backend deployment/frontend -n $(NAMESPACE)
 
 mysql:
-	kubectl exec -it -n $(NAMESPACE) mysql-0 -- mysql -uroot -prootpassword123 skillpulse
+	kubectl exec -it -n $(NAMESPACE) mysql-0 -- \
+		mysql -uroot -prootpassword123 skillpulse
 
 # =========================================
 # CLEANUP
