@@ -3,7 +3,10 @@ kind: Ingress
 metadata:
   name: skillpulse-ingress
   namespace: skillpulse
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: nginx
   rules:
     - http:
         paths:
