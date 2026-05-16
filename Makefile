@@ -60,9 +60,38 @@ deploy:
 # INGRESS
 # =========================================
 
-ingress-install:
-	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+# =========================================
+# INGRESS
+# =========================================
 
+ingress-install:
+	@echo "Labeling KIND control-plane node for ingress..."
+	kubectl label node $(CLUSTER)-control-plane ingress-ready=true --overwrite
+
+	@echo "Installing ingress-nginx..."
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml
+
+	@echo "Reducing ingress controller resource usage..."
+	kubectl patch deployment ingress-nginx-controller \
+		-n ingress-nginx \
+		--type='json' \
+		-p='[
+			{
+				"op":"replace",
+				"path":"/spec/template/spec/containers/0/resources",
+				"value":{
+					"requests":{
+						"cpu":"50m",
+						"memory":"90Mi"
+					},
+					"limits":{
+						"memory":"200Mi"
+					}
+				}
+			}
+		]'
+
+	@echo "Waiting for ingress controller..."
 	kubectl wait --namespace ingress-nginx \
 		--for=condition=ready pod \
 		--selector=app.kubernetes.io/component=controller \
