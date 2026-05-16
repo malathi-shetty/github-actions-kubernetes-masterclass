@@ -268,8 +268,18 @@ function formatDateTime() {
     return `[${formatted}]`;
 }
 
+function updateDateTime() {
+    const el = document.getElementById("current-datetime");
+    if (el) {
+        el.textContent = formatDateTime();
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("current-datetime").textContent = formatDateTime();
+    updateDateTime();
+
+    // refresh every minute
+    setInterval(updateDateTime, 60000);
 });
 
 // Close modals on backdrop click
