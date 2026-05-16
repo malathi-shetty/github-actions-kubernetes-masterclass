@@ -93,32 +93,32 @@ spec:
         - name: mysql
           image: mysql:8.4
           imagePullPolicy: IfNotPresent
+
           ports:
-            - name: mysql
-              containerPort: 3306
+            - containerPort: 3306
+
           envFrom:
             - secretRef:
                 name: skillpulse-db
+
           volumeMounts:
             - name: data
               mountPath: /var/lib/mysql
             - name: init
               mountPath: /docker-entrypoint-initdb.d
               readOnly: true
-          resources:
-            requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              memory: 512Mi
+
           livenessProbe:
             tcpSocket:
               port: 3306
             initialDelaySeconds: 30
-            periodSeconds: 10
+
           readinessProbe:
             exec:
-              command: [mysqladmin, ping, -h, localhost]
+              command:
+                - sh
+                - -c
+                - mysqladmin ping -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD
             initialDelaySeconds: 10
             periodSeconds: 5
             timeoutSeconds: 3
