@@ -1,13 +1,8 @@
 # =========================================
 # SKILLPULSE DEVOPS AUTOMATION
-# GitOps + ArgoCD + Kubernetes + CI/CD
 # =========================================
 
 SHELL := /bin/bash
-
-# =========================================
-# CONFIGURATION
-# =========================================
 
 CLUSTER   ?= skillpulse
 NAMESPACE ?= skillpulse
@@ -22,53 +17,23 @@ endif
 BACKEND_IMAGE  := $(DOCKERHUB_USERNAME)/skillpulse-backend:$(TAG)
 FRONTEND_IMAGE := $(DOCKERHUB_USERNAME)/skillpulse-frontend:$(TAG)
 
-# =========================================
-# PHONY TARGETS
-# =========================================
-
-.PHONY: setup bootstrap install check \
-        build load push \
-        argocd-up argocd-down argocd-status argocd-ui argocd-app \
-        ingress-controller ingress-apply \
-        gitops-init gitops-status \
-        status logs pods svc nodes \
-        restart mysql \
-        down clean
+.PHONY: build load push deploy up status logs pods svc nodes restart mysql \
+        ingress-install ingress-apply argocd-up argocd-app gitops-init clean cluster-debug
 
 # =========================================
 # HELP
 # =========================================
 
 help:
-	@echo "================================="
-	@echo "SkillPulse DevOps Automation"
-	@echo "================================="
-	@echo "make setup"
 	@echo "make build"
-	@echo "make gitops-init"
-	@echo "make gitops-status"
+	@echo "make deploy"
+	@echo "make ingress-install"
+	@echo "make ingress-apply"
+	@echo "make argocd-up"
+	@echo "make argocd-app"
 
 # =========================================
-# SETUP
-# =========================================
-
-setup:
-	./bootstrap.sh
-	./scripts/setup.sh
-
-bootstrap:
-	./bootstrap.sh
-
-install:
-	./scripts/setup.sh
-
-check:
-	docker --version
-	kubectl version --client
-	kind version
-
-# =========================================
-# BUILD & PUSH
+# BUILD / IMAGE
 # =========================================
 
 build:
@@ -84,72 +49,51 @@ push:
 	docker push $(FRONTEND_IMAGE)
 
 # =========================================
-# ARGOCD (GITOPS CORE)
+# DEPLOY (LOCAL TEST ONLY - NOT ARGOCD)
+# =========================================
+
+deploy:
+	kind create cluster --name $(CLUSTER) || true
+	$(MAKE) build
+	$(MAKE) load
+	@echo "Cluster ready"
+
+# =========================================
+# INGRESS (IMPORTANT FIX)
+# =========================================
+
+# 1. Install ingress controller (nginx inside cluster)
+ingress-install:
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml
+
+# 2. Apply YOUR ingress rules (app routing)
+ingress-apply:
+	kubectl apply -f k8s/ingress.yaml
+
+# =========================================
+# ARGOCD
 # =========================================
 
 argocd-up:
-	@echo "Installing ArgoCD..."
 	kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 	kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 	kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
-	@echo "ArgoCD Admin Password:"
-	kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-	@echo ""
-
-argocd-down:
-	kubectl delete namespace argocd
-
-argocd-status:
-	kubectl get pods -n argocd
-	kubectl get svc -n argocd
-	kubectl get pods -n argocd -o wide
-
-argocd-ui:
-	@echo "Open: https://localhost:8080"
-	kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 argocd-app:
 	kubectl apply -f k8s/argocd/application.yaml
 
-# =========================================
-# INGRESS (CLEAR SEPARATION)
-# =========================================
-
-ingress-controller:
-	@echo "Installing NGINX Ingress Controller..."
-	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml
-
-ingress-apply:
-	@echo "Applying application ingress..."
-	kubectl apply -f k8s/ingress.yaml
-
-# =========================================
-# GITOPS FLOW
-# =========================================
-
 gitops-init:
-	@echo "================================="
-	@echo "BOOTSTRAPPING GITOPS STACK"
-	@echo "================================="
 	$(MAKE) argocd-up
 	$(MAKE) argocd-app
-	$(MAKE) ingress-controller
+	$(MAKE) ingress-install
 	$(MAKE) ingress-apply
-	$(MAKE) argocd-status
-
-gitops-status:
-	@echo "Checking ArgoCD applications..."
-	kubectl get applications -n argocd || true
-	@echo ""
-	@echo "Cluster status:"
-	kubectl get pods -n $(NAMESPACE)
 
 # =========================================
-# DEBUG / MONITORING
+# STATUS
 # =========================================
 
 status:
-	kubectl get pods,svc,endpoints -n $(NAMESPACE)
+	kubectl get pods,svc -n $(NAMESPACE)
 
 logs:
 	kubectl logs -n $(NAMESPACE) -l app --tail=50 -f
@@ -164,10 +108,7 @@ nodes:
 	kubectl get nodes
 
 cluster-debug:
-	@echo "Nodes:"
 	kubectl get nodes
-	@echo ""
-	@echo "Details:"
 	kubectl describe node
 
 # =========================================
@@ -175,8 +116,6 @@ cluster-debug:
 # =========================================
 
 restart:
-	$(MAKE) build
-	$(MAKE) load
 	kubectl rollout restart deployment/backend deployment/frontend -n $(NAMESPACE)
 
 mysql:
@@ -185,9 +124,6 @@ mysql:
 # =========================================
 # CLEANUP
 # =========================================
-
-down:
-	kind delete cluster --name $(CLUSTER)
 
 clean:
 	kind delete cluster --name $(CLUSTER)
