@@ -362,7 +362,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: trainwithshubham/skillpulse-backend:latest
+          image: yourdockerhub/skillpulse-backend:__TAG__
           imagePullPolicy: IfNotPresent
           env:
             - { name: DB_HOST, value: mysql }   # ← Service DNS, not an IP
@@ -426,11 +426,11 @@ make restart   # rebuild + reload + roll deployments (the inner loop after editi
 
 ```
 $ make up
-docker build -t trainwithshubham/skillpulse-backend:latest  ./backend     # ~5s if cached
-docker build -t trainwithshubham/skillpulse-frontend:latest ./frontend    # ~3s
+docker build -t yourdockerhub/skillpulse-backend:__TAG__  ./backend     # ~5s if cached
+docker build -t yourdockerhub/skillpulse-frontend:__TAG__ ./frontend    # ~3s
 kind create cluster --config k8s/kind-config.yaml --name skillpulse       # ~30s
-kind load docker-image trainwithshubham/skillpulse-backend:latest …       # ~3s
-kind load docker-image trainwithshubham/skillpulse-frontend:latest …      # ~3s
+kind load docker-image yourdockerhub/skillpulse-backend:__TAG__ …       # ~3s
+kind load docker-image yourdockerhub/skillpulse-frontend:__TAG__ …      # ~3s
 kubectl apply -f k8s/00-namespace.yaml -f k8s/10-mysql.yaml ...           # instant
 kubectl rollout status statefulset/mysql ...                              # 30-60s on first boot
 kubectl rollout status deployment/backend ...                             # 5-15s
@@ -447,8 +447,8 @@ You changed a line in `backend/handlers/skills.go`. To see it running on the clu
 
 ```
 $ make restart
-docker build -t trainwithshubham/skillpulse-backend:latest  ./backend     # ~5s
-docker build -t trainwithshubham/skillpulse-frontend:latest ./frontend    # ~3s (cached)
+docker build -t yourdockerhub/skillpulse-backend:__TAG__  ./backend     # ~5s
+docker build -t yourdockerhub/skillpulse-frontend:__TAG__ ./frontend    # ~3s (cached)
 kind load docker-image …                                                  # ~3s each
 kubectl rollout restart deployment/backend deployment/frontend …
 deployment "backend" successfully rolled out
@@ -549,7 +549,7 @@ What you'll see:
 ```
 $ kubectl describe pod backend-...
 Events:
-  Warning  Failed     ...   Failed to pull image "trainwithshubham/skillpulse-backend:latest":
+  Warning  Failed     ...   Failed to pull image "yourdockerhub/skillpulse-backend:__TAG__":
                             no match for platform in manifest: not found
 ```
 
@@ -560,7 +560,7 @@ How it happens: GitHub Actions runners default to `linux/amd64`. When the image 
 How to confirm:
 
 ```bash
-docker manifest inspect trainwithshubham/skillpulse-backend:latest
+docker manifest inspect yourdockerhub/skillpulse-backend:__TAG__
 # Look for "platform": { "architecture": "amd64", ... } only — no arm64 entry
 ```
 
