@@ -14,41 +14,41 @@ DOCKERHUB_USERNAME ?= shettymalathi113
 BACKEND_IMAGE  := $(DOCKERHUB_USERNAME)/skillpulse-backend:$(TAG)
 FRONTEND_IMAGE := $(DOCKERHUB_USERNAME)/skillpulse-frontend:$(TAG)
 
-.PHONY: help build load push deploy \
+APP_NAME=skillpulse
+
+# =========================================
+# LOCAL DEV (DOCKER COMPOSE)
+# =========================================
+
+.PHONY: up down restart clean logs logs-k8s build build-k8s load push deploy \
         ingress-install ingress-status ingress-apply ingress-low-resource \
         argocd-up argocd-bootstrap gitops-init \
-        status logs pods svc nodes cluster-debug \
-        restart mysql clean
+        status pods svc nodes cluster-debug mysql
+
+up:
+	docker compose up -d --build || docker-compose up -d --build
+
+down:
+	docker compose down || docker-compose down
+
+restart: down up
+
+clean:
+	docker compose down -v --remove-orphans || docker-compose down -v --remove-orphans
+	docker system prune -f
 
 # =========================================
-# HELP
-# =========================================
-
-help:
-	@echo ""
-	@echo "Available Commands:"
-	@echo "-------------------"
-	@echo "make build"
-	@echo "make load"
-	@echo "make push"
-	@echo "make deploy"
-	@echo "make ingress-install"
-	@echo "make ingress-apply"
-	@echo "make ingress-status"
-	@echo "make ingress-low-resource"
-	@echo "make argocd-up"
-	@echo "make argocd-bootstrap"
-	@echo "make gitops-init"
-	@echo "make status"
-	@echo "make logs"
-	@echo "make restart"
-	@echo "make clean"
-
-# =========================================
-# BUILD / IMAGE
+# DOCKER BUILD (LOCAL IMAGE)
 # =========================================
 
 build:
+	docker build -t $(APP_NAME) .
+
+# =========================================
+# K8S BUILD + PUSH
+# =========================================
+
+build-k8s:
 	docker build -t $(BACKEND_IMAGE) ./backend
 	docker build -t $(FRONTEND_IMAGE) ./frontend
 
@@ -61,51 +61,39 @@ push:
 	docker push $(FRONTEND_IMAGE)
 
 # =========================================
-# DEPLOY (LOCAL TEST ONLY)
+# DEPLOY (KIND LOCAL CLUSTER)
 # =========================================
 
 deploy:
 	kind create cluster --name $(CLUSTER) || true
-	$(MAKE) build
+	$(MAKE) build-k8s
 	$(MAKE) load
-	@echo "Cluster ready"
+	kubectl apply -f k8s/
+	@echo "Cluster ready with tag $(TAG)"
 
 # =========================================
 # INGRESS
 # =========================================
 
 ingress-install:
-	@echo "Labeling KIND control-plane node for ingress..."
+	@echo "Labeling KIND node..."
 	kubectl label node $(CLUSTER)-control-plane ingress-ready=true --overwrite
 
 	@echo "Installing ingress-nginx..."
 	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml
 
-	@echo "Waiting for ingress controller..."
 	kubectl wait --namespace ingress-nginx \
 		--for=condition=ready pod \
 		--selector=app.kubernetes.io/component=controller \
 		--timeout=180s
 
-# =========================================
-# OPTIONAL:
-# Reduce ingress-nginx resource usage
-# Useful for small EC2 instances
-# =========================================
-
 ingress-low-resource:
-	@echo "Reducing ingress-nginx resource usage..."
-
 	kubectl patch deployment ingress-nginx-controller \
 		-n ingress-nginx \
 		--type=json \
 		-p='[{"op":"replace","path":"/spec/template/spec/containers/0/resources","value":{"requests":{"cpu":"50m","memory":"90Mi"},"limits":{"memory":"200Mi"}}}]'
 
-	@echo "Restarting ingress controller..."
 	kubectl rollout restart deployment ingress-nginx-controller -n ingress-nginx
-
-	@echo "Waiting for ingress controller..."
-	kubectl rollout status deployment ingress-nginx-controller -n ingress-nginx
 
 ingress-status:
 	kubectl get pods -n ingress-nginx
@@ -115,7 +103,7 @@ ingress-apply:
 	kubectl apply -f k8s/40-ingress.yaml
 
 # =========================================
-# ARGOCD
+# ARGOCD (GITOPS)
 # =========================================
 
 argocd-up:
@@ -135,10 +123,6 @@ argocd-bootstrap:
 	kubectl apply -f k8s/argocd/project.yaml
 	kubectl apply -f k8s/argocd/application.yaml
 
-# =========================================
-# FULL GITOPS BOOTSTRAP
-# =========================================
-
 gitops-init:
 	$(MAKE) ingress-install
 	$(MAKE) ingress-low-resource
@@ -147,14 +131,11 @@ gitops-init:
 	$(MAKE) ingress-apply
 
 # =========================================
-# STATUS
+# STATUS / DEBUG
 # =========================================
 
 status:
 	kubectl get pods,svc -n $(NAMESPACE)
-
-logs:
-	kubectl logs -n $(NAMESPACE) -l app --tail=50 -f
 
 pods:
 	kubectl get pods -n $(NAMESPACE)
@@ -169,6 +150,12 @@ cluster-debug:
 	kubectl get nodes
 	kubectl describe node
 
+logs:
+	kubectl logs -n $(NAMESPACE) -l app --tail=50 -f
+
+logs-k8s:
+	kubectl logs -n $(NAMESPACE) -l app --tail=100 -f
+
 # =========================================
 # OPERATIONS
 # =========================================
@@ -181,8 +168,8 @@ mysql:
 		mysql -uroot -prootpassword123 skillpulse
 
 # =========================================
-# CLEANUP
+# CLEANUP (K8S)
 # =========================================
 
-clean:
+clean-k8s:
 	kind delete cluster --name $(CLUSTER)
