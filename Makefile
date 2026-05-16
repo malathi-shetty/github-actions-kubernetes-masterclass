@@ -76,7 +76,8 @@ argocd-up:
 	kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 	kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
 
-argocd-app:
+argocd-bootstrap:
+	kubectl apply -f k8s/argocd/project.yaml
 	kubectl apply -f k8s/argocd/application.yaml
 
 gitops-init:
