@@ -271,3 +271,20 @@ restart-backend:
 
 restart-frontend:
 	kubectl rollout restart deployment/frontend -n $(NAMESPACE)
+
+# =========================================
+# METRICS SERVER
+# =========================================
+
+metrics-install:
+	kubectl apply -f \
+	https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+metrics-status:
+	kubectl get pods -n kube-system | grep metrics
+
+top-pods:
+	kubectl top pods -A
+
+top-nodes:
+	kubectl top nodes
