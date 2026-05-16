@@ -8,12 +8,12 @@ SHELL := /bin/bash
 # VARIABLES
 # =========================================
 
-CLUSTER ?= skillpulse
+CLUSTER              ?= skillpulse
 
-NAMESPACE ?= skillpulse
+NAMESPACE            ?= skillpulse
 MONITORING_NAMESPACE ?= monitoring
 
-DOCKERHUB_USERNAME ?= shettymalathi113
+DOCKERHUB_USERNAME   ?= shettymalathi113
 
 TAG := $(shell git rev-parse --short HEAD)
 
@@ -24,16 +24,20 @@ FRONTEND_IMAGE := $(DOCKERHUB_USERNAME)/skillpulse-frontend:$(TAG)
 # PHONY
 # =========================================
 
-.PHONY: help up down restart clean \
-	build-k8s push load deploy destroy \
+.PHONY: help \
+	up down restart clean \
+	cluster-create cluster-info clean-k8s \
+	build-k8s push load \
+	deploy destroy \
 	argocd-up argocd-bootstrap gitops-init \
+	helm-install helm-version \
 	monitoring-install monitoring-delete \
 	status pods svc ingress nodes \
 	logs backend-logs frontend-logs mysql-logs \
 	restart-backend restart-frontend \
 	argocd-password grafana-password \
 	argocd-port-forward grafana-port-forward \
-	cluster-info clean-k8s
+	metrics-install metrics-status top-pods top-nodes
 
 # =========================================
 # HELP
@@ -43,15 +47,25 @@ help:
 	@echo ""
 	@echo "========== SKILLPULSE DEVOPS =========="
 	@echo ""
+
 	@echo "Local Development:"
 	@echo "  make up"
 	@echo "  make down"
 	@echo "  make restart"
 	@echo ""
+
 	@echo "Docker:"
 	@echo "  make build-k8s"
 	@echo "  make push"
+	@echo "  make load"
 	@echo ""
+
+	@echo "Kind Cluster:"
+	@echo "  make cluster-create"
+	@echo "  make cluster-info"
+	@echo "  make clean-k8s"
+	@echo ""
+
 	@echo "Kubernetes:"
 	@echo "  make deploy"
 	@echo "  make destroy"
@@ -59,28 +73,47 @@ help:
 	@echo "  make pods"
 	@echo "  make svc"
 	@echo "  make ingress"
+	@echo "  make nodes"
 	@echo ""
+
 	@echo "ArgoCD:"
 	@echo "  make argocd-up"
 	@echo "  make gitops-init"
 	@echo "  make argocd-port-forward"
 	@echo "  make argocd-password"
 	@echo ""
+
+	@echo "Helm:"
+	@echo "  make helm-install"
+	@echo "  make helm-version"
+	@echo ""
+
 	@echo "Monitoring:"
 	@echo "  make monitoring-install"
 	@echo "  make monitoring-delete"
 	@echo "  make grafana-port-forward"
 	@echo "  make grafana-password"
 	@echo ""
+
+	@echo "Metrics:"
+	@echo "  make metrics-install"
+	@echo "  make metrics-status"
+	@echo "  make top-pods"
+	@echo "  make top-nodes"
+	@echo ""
+
 	@echo "Logs:"
+	@echo "  make logs"
 	@echo "  make backend-logs"
 	@echo "  make frontend-logs"
 	@echo "  make mysql-logs"
 	@echo ""
-	@echo "Restart:"
+
+	@echo "Rolling Restarts:"
 	@echo "  make restart-backend"
 	@echo "  make restart-frontend"
 	@echo ""
+
 	@echo "Cleanup:"
 	@echo "  make clean"
 	@echo "  make clean-k8s"
@@ -137,10 +170,15 @@ load:
 
 deploy:
 	$(MAKE) cluster-create
-	kubectl create namespace $(NAMESPACE) --dry-run=client -o yaml | kubectl apply -f -
+
+	kubectl create namespace $(NAMESPACE) \
+		--dry-run=client -o yaml | kubectl apply -f -
+
 	$(MAKE) build-k8s
 	$(MAKE) load
+
 	kubectl apply -f k8s/
+
 	@echo ""
 	@echo "SkillPulse deployed successfully"
 	@echo "ArgoCD auto-sync enabled"
@@ -154,9 +192,11 @@ destroy:
 # =========================================
 
 argocd-up:
-	kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+	kubectl create namespace argocd \
+		--dry-run=client -o yaml | kubectl apply -f -
+
 	kubectl apply -n argocd \
-	-f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+		-f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 argocd-bootstrap:
 	kubectl apply -f k8s/argocd/project.yaml
@@ -168,16 +208,15 @@ gitops-init:
 
 argocd-port-forward:
 	kubectl port-forward svc/argocd-server \
-	-n argocd 8080:443
+		-n argocd 8080:443
 
 argocd-password:
 	@echo ""
 	@echo "ArgoCD Admin Password:"
 	@kubectl get secret argocd-initial-admin-secret \
-	-n argocd \
-	-o jsonpath="{.data.password}" | base64 --decode
+		-n argocd \
+		-o jsonpath="{.data.password}" | base64 --decode
 	@echo ""
-
 
 # =========================================
 # HELM
@@ -200,31 +239,31 @@ helm-version:
 
 monitoring-install: helm-install
 	helm repo add prometheus-community \
-	https://prometheus-community.github.io/helm-charts || true
+		https://prometheus-community.github.io/helm-charts || true
 
 	helm repo update
 
 	kubectl create namespace $(MONITORING_NAMESPACE) \
-	--dry-run=client -o yaml | kubectl apply -f -
+		--dry-run=client -o yaml | kubectl apply -f -
 
 	helm upgrade --install monitoring \
-	prometheus-community/kube-prometheus-stack \
-	-n $(MONITORING_NAMESPACE)
+		prometheus-community/kube-prometheus-stack \
+		-n $(MONITORING_NAMESPACE)
 
 monitoring-delete:
 	helm uninstall monitoring -n $(MONITORING_NAMESPACE)
 
 grafana-port-forward:
 	kubectl port-forward --address 0.0.0.0 \
-	svc/monitoring-grafana 3000:80 \
-	-n $(MONITORING_NAMESPACE)
+		svc/monitoring-grafana 3000:80 \
+		-n $(MONITORING_NAMESPACE)
 
 grafana-password:
 	@echo ""
 	@echo "Grafana Admin Password:"
 	@kubectl get secret monitoring-grafana \
-	-n $(MONITORING_NAMESPACE) \
-	-o jsonpath="{.data.admin-password}" | base64 --decode
+		-n $(MONITORING_NAMESPACE) \
+		-o jsonpath="{.data.admin-password}" | base64 --decode
 	@echo ""
 
 # =========================================
@@ -254,23 +293,31 @@ logs:
 	kubectl logs -n $(NAMESPACE) -l app --tail=100 -f
 
 backend-logs:
-	kubectl logs deployment/backend -n $(NAMESPACE) --tail=100 -f
+	kubectl logs deployment/backend \
+		-n $(NAMESPACE) \
+		--tail=100 -f
 
 frontend-logs:
-	kubectl logs deployment/frontend -n $(NAMESPACE) --tail=100 -f
+	kubectl logs deployment/frontend \
+		-n $(NAMESPACE) \
+		--tail=100 -f
 
 mysql-logs:
-	kubectl logs statefulset/mysql -n $(NAMESPACE) --tail=100 -f
+	kubectl logs statefulset/mysql \
+		-n $(NAMESPACE) \
+		--tail=100 -f
 
 # =========================================
 # ROLLING RESTARTS
 # =========================================
 
 restart-backend:
-	kubectl rollout restart deployment/backend -n $(NAMESPACE)
+	kubectl rollout restart deployment/backend \
+		-n $(NAMESPACE)
 
 restart-frontend:
-	kubectl rollout restart deployment/frontend -n $(NAMESPACE)
+	kubectl rollout restart deployment/frontend \
+		-n $(NAMESPACE)
 
 # =========================================
 # METRICS SERVER
@@ -278,7 +325,7 @@ restart-frontend:
 
 metrics-install:
 	kubectl apply -f \
-	https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+		https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
 metrics-status:
 	kubectl get pods -n kube-system | grep metrics
