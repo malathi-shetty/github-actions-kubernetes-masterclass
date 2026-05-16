@@ -200,11 +200,11 @@ make down                        # deletes the cluster (and the MySQL data with 
 What `make up` actually runs, in order:
 
 ```bash
-docker build -t trainwithshubham/skillpulse-backend:latest  ./backend
-docker build -t trainwithshubham/skillpulse-frontend:latest ./frontend
+docker build -t yourdockerhub/skillpulse-backend:__TAG__  ./backend
+docker build -t yourdockerhub/skillpulse-frontend:__TAG__ ./frontend
 kind create cluster --config k8s/kind-config.yaml --name skillpulse
-kind load docker-image trainwithshubham/skillpulse-backend:latest  --name skillpulse
-kind load docker-image trainwithshubham/skillpulse-frontend:latest --name skillpulse
+kind load docker-image yourdockerhub/skillpulse-backend:__TAG__  --name skillpulse
+kind load docker-image yourdockerhub/skillpulse-frontend:__TAG__ --name skillpulse
 kubectl apply -f k8s/00-namespace.yaml \
               -f k8s/10-mysql.yaml \
               -f k8s/20-backend.yaml \
@@ -301,7 +301,7 @@ The new CD path doesn't `kubectl apply` from GitHub Actions — your kind cluste
 ```
 git push to main
     ↓
-CI: build images, push trainwithshubham/skillpulse-{backend,frontend}:{latest,<sha>}
+CI: build images, push yourdockerhub/skillpulse-{backend,frontend}:{__TAG__,<sha>}
     ↓
 cd-k8s.yml: sed image: lines in k8s/20-backend.yaml + k8s/30-frontend.yaml
             commit "deploy: pin backend+frontend to <short-sha>" to main as github-actions[bot]
