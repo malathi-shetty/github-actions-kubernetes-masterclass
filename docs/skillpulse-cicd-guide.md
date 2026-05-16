@@ -240,7 +240,7 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-backend:${{ github.sha }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-backend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-backend:__TAG__
 
       - name: Build and push frontend
         uses: docker/build-push-action@v7
@@ -249,7 +249,7 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-frontend:${{ github.sha }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-frontend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-frontend:__TAG__
 ```
 
 **`name: CI`.** A label that shows up in the GitHub Actions UI.
