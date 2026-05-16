@@ -9,10 +9,7 @@ NAMESPACE ?= skillpulse
 
 TAG := $(shell git rev-parse --short HEAD)
 
-DOCKERHUB_USERNAME ?=
-ifeq ($(DOCKERHUB_USERNAME),)
-$(error DOCKERHUB_USERNAME is not set. export DOCKERHUB_USERNAME=yourname)
-endif
+DOCKERHUB_USERNAME ?= shettymalathi113
 
 BACKEND_IMAGE  := $(DOCKERHUB_USERNAME)/skillpulse-backend:$(TAG)
 FRONTEND_IMAGE := $(DOCKERHUB_USERNAME)/skillpulse-frontend:$(TAG)
