@@ -44,14 +44,14 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-frontend:${{ github.sha }}
 
-      - name: GitOps Update (Manifest Tag)
+      - name: GitOps Update (ONLY ONE METHOD)
         if: ${{ vars.DEPLOY_ENABLED == 'true' }}
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          sed -i "s|__TAG__|${{ github.sha }}|g" k8s/*.yaml
+          find k8s -type f -name "*.yaml" -exec sed -i "s|__TAG__|${{ github.sha }}|g" {} +
 
           git add k8s
-          git commit -m "GitOps update image tag ${{ github.sha }}" || echo "No changes"
+          git commit -m "chore: update image tag ${{ github.sha }}" || echo "No changes"
           git push
