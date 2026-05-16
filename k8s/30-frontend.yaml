@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: yourdockerhub/skillpulse-frontend:__TAG__
+          image: yourdockerhub/skillpulse-frontend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
