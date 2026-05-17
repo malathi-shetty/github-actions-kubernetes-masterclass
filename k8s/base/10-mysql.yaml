@@ -74,7 +74,7 @@ spec:
       targetPort: 3306
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: mysql
   namespace: skillpulse
@@ -126,11 +126,3 @@ spec:
         - name: init
           configMap:
             name: mysql-init
-  volumeClaimTemplates:
-    - metadata:
-        name: data
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 1Gi
