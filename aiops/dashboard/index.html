@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SkillPulse AIOps Dashboard</title>
+  <style>
+    body { font-family: Arial; background:#0f172a; color:white; padding:20px; }
+    .card { background:#1e293b; padding:15px; margin:10px; border-radius:10px; }
+    .good { color:#22c55e; }
+    .warn { color:#f59e0b; }
+  </style>
+</head>
+<body>
+
+<h1>🚀 SkillPulse AIOps Dashboard</h1>
+
+<div class="card">
+  <h2>CI Pipeline</h2>
+  <p class="good">✔ SUCCESS</p>
+</div>
+
+<div class="card">
+  <h2>Security</h2>
+  <p class="warn">⚠ HIGH / CRITICAL vulnerabilities detected (Trivy)</p>
+</div>
+
+<div class="card">
+  <h2>GitOps</h2>
+  <p class="good">✔ ArgoCD Synced</p>
+</div>
+
+<div class="card">
+  <h2>Canary Deployment</h2>
+  <p class="good">✔ Healthy (100% traffic stable)</p>
+</div>
+
+</body>
+</html>
