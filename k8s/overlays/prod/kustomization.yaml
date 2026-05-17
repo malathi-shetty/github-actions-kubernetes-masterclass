@@ -5,7 +5,7 @@ namespace: skillpulse-prod
 
 resources:
   - ../../base
-  - 40-ingress.yaml
+  - ingress.yaml
 
 patches:
   - target:
