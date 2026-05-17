@@ -78,21 +78,18 @@ jobs:
           docker tag frontend:${{ github.sha }} $IMAGE_FRONTEND:${{ github.sha }}
           docker push $IMAGE_FRONTEND:${{ github.sha }}
 
-# ================= AIOPS REPORT (SAFE ECHO VERSION) =================
+# ================= AIOPS REPORT =================
       - name: Generate AIOps Report
         if: always()
         run: |
           mkdir -p aiops/reports
 
           echo "# AIOps Report" > aiops/reports/report.md
-          echo "" >> aiops/reports/report.md
           echo "Commit: $GITHUB_SHA" >> aiops/reports/report.md
           echo "Actor: $GITHUB_ACTOR" >> aiops/reports/report.md
-          echo "" >> aiops/reports/report.md
-          echo "Backend Image: $IMAGE_BACKEND:${{ github.sha }}" >> aiops/reports/report.md
-          echo "Frontend Image: $IMAGE_FRONTEND:${{ github.sha }}" >> aiops/reports/report.md
-          echo "" >> aiops/reports/report.md
-          echo "Status: CI Completed Successfully" >> aiops/reports/report.md
+          echo "Backend: $IMAGE_BACKEND:${{ github.sha }}" >> aiops/reports/report.md
+          echo "Frontend: $IMAGE_FRONTEND:${{ github.sha }}" >> aiops/reports/report.md
+          echo "Status: CI Completed" >> aiops/reports/report.md
 
 # ================= UPLOAD REPORT =================
       - name: Upload AIOps Report
@@ -102,3 +99,11 @@ jobs:
           name: aiops-report
           path: aiops/reports/report.md
 
+# ================= SLACK =================
+      - name: Slack Notify
+        if: always()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: "CI-AIOps Result"
+          SLACK_MESSAGE: "Pipeline finished for ${{ github.sha }}"
