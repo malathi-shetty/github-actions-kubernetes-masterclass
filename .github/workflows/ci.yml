@@ -16,9 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-# =========================
-# DOCKER SETUP
-# =========================
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
@@ -28,10 +25,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-# =========================
-# BACKEND BUILD
-# =========================
-      - name: Build Backend Image
+# ================= BACKEND =================
+      - name: Build Backend
         uses: docker/build-push-action@v7
         with:
           context: ./backend
@@ -40,9 +35,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-# =========================
-# BACKEND SCAN (SAFE MODE)
-# =========================
       - name: Trivy Backend Scan
         uses: aquasecurity/trivy-action@master
         with:
@@ -52,18 +44,13 @@ jobs:
           severity: CRITICAL,HIGH
           ignore-unfixed: true
 
-# =========================
-# PUSH BACKEND (SHA TAGGED)
-# =========================
       - name: Push Backend
         run: |
           docker tag backend:${{ github.sha }} $IMAGE_BACKEND:${{ github.sha }}
           docker push $IMAGE_BACKEND:${{ github.sha }}
 
-# =========================
-# FRONTEND BUILD
-# =========================
-      - name: Build Frontend Image
+# ================= FRONTEND =================
+      - name: Build Frontend
         uses: docker/build-push-action@v7
         with:
           context: ./frontend
@@ -72,9 +59,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-# =========================
-# FRONTEND SCAN
-# =========================
       - name: Trivy Frontend Scan
         uses: aquasecurity/trivy-action@master
         with:
@@ -84,53 +68,28 @@ jobs:
           severity: CRITICAL,HIGH
           ignore-unfixed: true
 
-# =========================
-# PUSH FRONTEND
-# =========================
       - name: Push Frontend
         run: |
           docker tag frontend:${{ github.sha }} $IMAGE_FRONTEND:${{ github.sha }}
           docker push $IMAGE_FRONTEND:${{ github.sha }}
 
-# =========================
-# AIOPS REPORT (REAL SIGNALS)
-# =========================
+# ================= AIOPS REPORT =================
       - name: Generate AIOps Report
         if: always()
         run: |
           mkdir -p aiops/reports
-
           cat > aiops/reports/report.md <<EOF
-# 🚀 SkillPulse AIOps Report
+# AIOps Report
 
-## CI Status
-- Commit: $GITHUB_SHA
-- Actor: $GITHUB_ACTOR
-- Branch: main
+Commit: $GITHUB_SHA
+Actor: $GITHUB_ACTOR
 
-## Images
-- Backend: $IMAGE_BACKEND:${{ github.sha }}
-- Frontend: $IMAGE_FRONTEND:${{ github.sha }}
+Backend: $IMAGE_BACKEND:${{ github.sha }}
+Frontend: $IMAGE_FRONTEND:${{ github.sha }}
 
-## Security
-- Trivy: Scanned (CRITICAL + HIGH)
-- Mode: ignore-unfixed enabled
-
-## GitOps
-- Strategy: SHA-based tagging
-- Deployment: ArgoCD
-
-## Canary
-- Engine: Argo Rollouts
-- Status: Observed via cluster
-
-## Health Score
-- Score: 92/100
+Status: CI Completed
 EOF
 
-# =========================
-# UPLOAD REPORT
-# =========================
       - name: Upload AIOps Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -138,19 +97,11 @@ EOF
           name: aiops-report
           path: aiops/reports/report.md
 
-# =========================
-# SLACK NOTIFICATION (AIOps ALERT)
-# =========================
+# ================= SLACK =================
       - name: Slack Notify
         if: always()
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_TITLE: "CI-AIOps Pipeline Status"
-          SLACK_MESSAGE: |
-            🚀 Build Completed: ${{ github.sha }}
-            👤 Actor: ${{ github.actor }}
-            🔐 Security: Trivy scanned
-            📦 Images pushed (SHA-based)
-            📊 AIOps report generated
-          SLACK_COLOR: ${{ job.status }}
+          SLACK_TITLE: "CI-AIOps Result"
+          SLACK_MESSAGE: "Pipeline finished for ${{ github.sha }}"
