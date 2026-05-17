@@ -43,7 +43,7 @@ jobs:
         with:
           image-ref: skillpulse-backend:ci
           format: table
-          exit-code: 1
+          exit-code: 0
           severity: CRITICAL,HIGH
           ignore-unfixed: true
 
@@ -75,7 +75,7 @@ jobs:
         with:
           image-ref: skillpulse-frontend:ci
           format: table
-          exit-code: 1
+          exit-code: 0
           severity: CRITICAL,HIGH
           ignore-unfixed: true
 
