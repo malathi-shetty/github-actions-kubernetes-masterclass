@@ -99,11 +99,11 @@ jobs:
           name: aiops-report
           path: aiops/reports/report.md
 
-# ================= SLACK =================
-      - name: Slack Notify
+# ================= DEPLOY DASHBOARD =================
+      - name: Deploy AIOps Dashboard
         if: always()
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_TITLE: "CI-AIOps Result"
-          SLACK_MESSAGE: "Pipeline finished for ${{ github.sha }}"
+        run: |
+          echo "Deploying AIOps dashboard to EC2..."
+
+          scp -o StrictHostKeyChecking=no -r aiops/dashboard/* \
+          ubuntu@${{ secrets.EC2_HOST }}:/var/www/aiops/
