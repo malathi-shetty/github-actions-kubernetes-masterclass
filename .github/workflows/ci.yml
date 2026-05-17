@@ -101,9 +101,10 @@ jobs:
 
 # ================= DEPLOY DASHBOARD =================
       - name: Deploy AIOps Dashboard
-        if: always()
-        run: |
-          echo "Deploying AIOps dashboard to EC2..."
-
-          scp -o StrictHostKeyChecking=no -r aiops/dashboard/* \
-          ubuntu@${{ secrets.EC2_HOST }}:/var/www/aiops/
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "aiops/dashboard/*"
+          target: "/var/www/aiops/"
