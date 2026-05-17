@@ -2,8 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
   name: backend
-  namespace: skillpulse
-
+  namespace: skillpulse-prod   # IMPORTANT FIX
 spec:
   replicas: 3
 
@@ -21,17 +20,14 @@ spec:
         - name: backend
           image: shettymalathi113/skillpulse-backend:latest
           imagePullPolicy: Always
-
           ports:
             - containerPort: 8080
 
           env:
             - name: DB_HOST
               value: mysql
-
             - name: DB_PORT
               value: "3306"
-
             - name: PORT
               value: "8080"
 
@@ -52,28 +48,6 @@ spec:
                 secretKeyRef:
                   name: skillpulse-db
                   key: MYSQL_DATABASE
-
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "64Mi"
-            limits:
-              cpu: "500m"
-              memory: "128Mi"
-
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 15
-            periodSeconds: 10
-
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 5
 
   strategy:
     canary:
