@@ -26,7 +26,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-# ================= BACKEND =================
+# ================= BACKEND BUILD =================
       - name: Build Backend
         uses: docker/build-push-action@v7
         with:
@@ -36,6 +36,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+# ================= BACKEND SCAN =================
       - name: Trivy Backend Scan
         uses: aquasecurity/trivy-action@master
         with:
@@ -45,12 +46,13 @@ jobs:
           severity: CRITICAL,HIGH
           ignore-unfixed: true
 
+# ================= BACKEND PUSH =================
       - name: Push Backend
         run: |
           docker tag backend:${{ github.sha }} $IMAGE_BACKEND:${{ github.sha }}
           docker push $IMAGE_BACKEND:${{ github.sha }}
 
-# ================= FRONTEND =================
+# ================= FRONTEND BUILD =================
       - name: Build Frontend
         uses: docker/build-push-action@v7
         with:
@@ -60,6 +62,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+# ================= FRONTEND SCAN =================
       - name: Trivy Frontend Scan
         uses: aquasecurity/trivy-action@master
         with:
@@ -69,29 +72,29 @@ jobs:
           severity: CRITICAL,HIGH
           ignore-unfixed: true
 
+# ================= FRONTEND PUSH =================
       - name: Push Frontend
         run: |
           docker tag frontend:${{ github.sha }} $IMAGE_FRONTEND:${{ github.sha }}
           docker push $IMAGE_FRONTEND:${{ github.sha }}
 
-# ================= AIOPS REPORT =================
+# ================= AIOPS REPORT (SAFE ECHO VERSION) =================
       - name: Generate AIOps Report
         if: always()
         run: |
           mkdir -p aiops/reports
 
-          cat > aiops/reports/report.md <<EOF
-# AIOps Report
+          echo "# AIOps Report" > aiops/reports/report.md
+          echo "" >> aiops/reports/report.md
+          echo "Commit: $GITHUB_SHA" >> aiops/reports/report.md
+          echo "Actor: $GITHUB_ACTOR" >> aiops/reports/report.md
+          echo "" >> aiops/reports/report.md
+          echo "Backend Image: $IMAGE_BACKEND:${{ github.sha }}" >> aiops/reports/report.md
+          echo "Frontend Image: $IMAGE_FRONTEND:${{ github.sha }}" >> aiops/reports/report.md
+          echo "" >> aiops/reports/report.md
+          echo "Status: CI Completed Successfully" >> aiops/reports/report.md
 
-Commit: $GITHUB_SHA
-Actor: $GITHUB_ACTOR
-
-Backend Image: $IMAGE_BACKEND:${{ github.sha }}
-Frontend Image: $IMAGE_FRONTEND:${{ github.sha }}
-
-Status: CI Completed
-EOF
-
+# ================= UPLOAD REPORT =================
       - name: Upload AIOps Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -99,11 +102,11 @@ EOF
           name: aiops-report
           path: aiops/reports/report.md
 
-# ================= SLACK =================
+# ================= SLACK NOTIFY =================
       - name: Slack Notify
         if: always()
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_TITLE: "CI-AIOps Result"
-          SLACK_MESSAGE: "Pipeline finished for ${{ github.sha }} | Status: success/failure"
+          SLACK_MESSAGE: "Pipeline finished for ${{ github.sha }}"
