@@ -1,32 +1,11 @@
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: backend
-  namespace: skillpulse
-  labels:
-    app: backend
-
-spec:
-  type: ClusterIP
-
-  selector:
-    app: backend
-
-  ports:
-    - name: http
-      port: 8080
-      targetPort: 8080
-
----
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: backend
   namespace: skillpulse
 
 spec:
-  replicas: 1
+  replicas: 3
 
   selector:
     matchLabels:
@@ -44,8 +23,7 @@ spec:
           imagePullPolicy: Always
 
           ports:
-            - name: http
-              containerPort: 8080
+            - containerPort: 8080
 
           env:
             - name: DB_HOST
@@ -79,7 +57,6 @@ spec:
             requests:
               cpu: "100m"
               memory: "64Mi"
-
             limits:
               cpu: "500m"
               memory: "128Mi"
@@ -88,7 +65,6 @@ spec:
             httpGet:
               path: /health
               port: 8080
-
             initialDelaySeconds: 15
             periodSeconds: 10
 
@@ -96,6 +72,14 @@ spec:
             httpGet:
               path: /health
               port: 8080
-
             initialDelaySeconds: 5
             periodSeconds: 5
+
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: { duration: 30s }
+        - setWeight: 50
+        - pause: { duration: 30s }
+        - setWeight: 100
