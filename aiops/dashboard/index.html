@@ -1,37 +1,195 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>SkillPulse AIOps Dashboard</title>
+
   <style>
-    body { font-family: Arial; background:#0f172a; color:white; padding:20px; }
-    .card { background:#1e293b; padding:15px; margin:10px; border-radius:10px; }
-    .good { color:#22c55e; }
-    .warn { color:#f59e0b; }
+    body {
+      margin: 0;
+      font-family: system-ui, Arial;
+      background: #0b1220;
+      color: white;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      background: linear-gradient(90deg,#1e3a8a,#0ea5e9);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 18px;
+      border-radius: 14px;
+      transition: 0.3s;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #38bdf8;
+    }
+
+    .title {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .status {
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .success { color: #22c55e; }
+    .warn { color: #f59e0b; }
+    .danger { color: #ef4444; }
+    .info { color: #38bdf8; }
+
+    .pulse {
+      width: 10px;
+      height: 10px;
+      background: #22c55e;
+      border-radius: 50%;
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.5; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 12px;
+      opacity: 0.5;
+    }
   </style>
 </head>
+
 <body>
 
-<h1>🚀 SkillPulse AIOps Dashboard</h1>
+<header>
+  <h1>🚀 SkillPulse AIOps Control Plane</h1>
+  <p id="timestamp">Loading...</p>
+</header>
 
-<div class="card">
-  <h2>CI Pipeline</h2>
-  <p class="good">✔ SUCCESS</p>
+<div class="container">
+
+  <div class="card">
+    <div class="pulse"></div>
+    <div class="title">CI Pipeline</div>
+    <div id="ci" class="status success">✔ SUCCESS</div>
+  </div>
+
+  <div class="card">
+    <div class="pulse"></div>
+    <div class="title">Security Scan (Trivy)</div>
+    <div id="sec" class="status warn">⚠ SCANNING</div>
+  </div>
+
+  <div class="card">
+    <div class="pulse"></div>
+    <div class="title">GitOps (ArgoCD)</div>
+    <div id="gitops" class="status success">✔ SYNCED</div>
+  </div>
+
+  <div class="card">
+    <div class="pulse"></div>
+    <div class="title">Canary Deployment</div>
+    <div id="canary" class="status info">✔ STABLE</div>
+  </div>
+
 </div>
 
-<div class="card">
-  <h2>Security</h2>
-  <p class="warn">⚠ HIGH / CRITICAL vulnerabilities detected (Trivy)</p>
-</div>
+<footer>
+  SkillPulse Observability • Live AIOps Control Plane
+</footer>
 
-<div class="card">
-  <h2>GitOps</h2>
-  <p class="good">✔ ArgoCD Synced</p>
-</div>
+<script>
+const owner = "YOUR_GITHUB_USERNAME";
+const repo = "YOUR_REPO_NAME";
 
-<div class="card">
-  <h2>Canary Deployment</h2>
-  <p class="good">✔ Healthy (100% traffic stable)</p>
-</div>
+// update timestamp
+function updateTime() {
+  document.getElementById("timestamp").innerText =
+    "Last Updated: " + new Date().toLocaleString();
+}
+
+// fetch CI status from GitHub Actions
+async function fetchCIStatus() {
+  try {
+    const res = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/actions/runs?per_page=1`
+    );
+    const data = await res.json();
+
+    const run = data.workflow_runs?.[0];
+
+    if (!run) return;
+
+    let statusText = "";
+
+    if (run.status !== "completed") {
+      statusText = "⏳ RUNNING";
+    } else if (run.conclusion === "success") {
+      statusText = "✔ SUCCESS";
+    } else {
+      statusText = "❌ FAILED";
+    }
+
+    document.getElementById("ci").innerText = statusText;
+  } catch (e) {
+    document.getElementById("ci").innerText = "⚠ ERROR FETCHING CI";
+  }
+}
+
+// simulated GitOps (we’ll upgrade to ArgoCD API next)
+function fetchGitOps() {
+  document.getElementById("gitops").innerText =
+    Math.random() > 0.2 ? "✔ SYNCED (ArgoCD)" : "⚠ OUT OF SYNC";
+}
+
+// simulated canary (later connect Prometheus)
+function fetchCanary() {
+  document.getElementById("canary").innerText =
+    Math.random() > 0.1 ? "✔ STABLE TRAFFIC" : "⚠ SHIFTING TRAFFIC";
+}
+
+// security placeholder (later Trivy JSON)
+function fetchSecurity() {
+  document.getElementById("sec").innerText =
+    Math.random() > 0.5 ? "✔ CLEAN SCAN" : "⚠ HIGH FINDINGS";
+}
+
+// main refresh loop
+async function refresh() {
+  updateTime();
+  await fetchCIStatus();
+  fetchGitOps();
+  fetchCanary();
+  fetchSecurity();
+}
+
+// refresh every 10 seconds (realistic monitoring interval)
+setInterval(refresh, 10000);
+refresh();
+</script>
 
 </body>
 </html>
