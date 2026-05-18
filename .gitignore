@@ -94,3 +94,9 @@ CLAUDE.md
 
 docs/skillpulse-cicd-guide.html
 docs/skillpulse-kubernetes-guide.html
+
+
+infra/**/.terraform/
+infra/**/.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
