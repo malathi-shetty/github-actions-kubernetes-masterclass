@@ -24,7 +24,6 @@ spec:
     spec:
       containers:
         - name: frontend
-
           image: shettymalathi113/skillpulse-frontend:latest
           imagePullPolicy: Always
 
@@ -55,7 +54,7 @@ spec:
 
 ---
 # =========================================
-# BACKEND ROLLOUT
+# BACKEND DEPLOYMENT
 # =========================================
 
 apiVersion: apps/v1
@@ -67,6 +66,13 @@ metadata:
 
 spec:
   replicas: 3
+
+  strategy:
+    type: RollingUpdate
+
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
 
   selector:
     matchLabels:
@@ -114,21 +120,6 @@ spec:
                 secretKeyRef:
                   name: skillpulse-db
                   key: MYSQL_DATABASE
-
-  strategy:
-    canary:
-      steps:
-        - setWeight: 20
-
-        - pause:
-            duration: 30s
-
-        - setWeight: 50
-
-        - pause:
-            duration: 30s
-
-        - setWeight: 100
 
 ---
 # =========================================
