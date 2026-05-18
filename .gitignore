@@ -96,7 +96,14 @@ docs/skillpulse-cicd-guide.html
 docs/skillpulse-kubernetes-guide.html
 
 
+# =========================================
+# TERRAFORM
+# =========================================
+
 infra/**/.terraform/
-infra/**/.terraform.lock.hcl
+
 *.tfstate
 *.tfstate.*
+
+crash.log
+crash.*.log
