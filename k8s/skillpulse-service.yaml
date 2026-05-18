@@ -11,26 +11,13 @@ spec:
   selector:
     app: skillpulse
   ports:
-    - port: 8888
+    - name: http
+      port: 8888
       targetPort: 8888
 
+---
 # =========================================
-# Grafana
-# =========================================
-apiVersion: v1
-kind: Service
-metadata:
-  name: grafana
-spec:
-  type: LoadBalancer
-  selector:
-    app: grafana
-  ports:
-    - port: 8080
-      targetPort: 3000
-
-# =========================================
-# Grafana
+# Grafana Service
 # =========================================
 
 apiVersion: v1
@@ -42,12 +29,13 @@ spec:
   selector:
     app: grafana
   ports:
-    - port: 8080
+    - name: http
+      port: 8080
       targetPort: 3000
 
-
+---
 # =========================================
-# Prometheus
+# Prometheus Service
 # =========================================
 
 apiVersion: v1
@@ -59,12 +47,31 @@ spec:
   selector:
     app: prometheus
   ports:
-    - port: 9090
+    - name: http
+      port: 9090
       targetPort: 9090
 
-
+---
 # =========================================
-# ArgoCD
+# AIOps UI Service
+# =========================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: aiops-ui
+spec:
+  type: LoadBalancer
+  selector:
+    app: aiops
+  ports:
+    - name: http
+      port: 8090
+      targetPort: 8090
+
+---
+# =========================================
+# ArgoCD Service
 # =========================================
 
 apiVersion: v1
@@ -76,9 +83,6 @@ spec:
   selector:
     app.kubernetes.io/name: argocd-server
   ports:
-    - port: 8081
+    - name: http
+      port: 8081
       targetPort: 8080
-
-# =========================================
-# Grafana
-# =========================================
