@@ -3,18 +3,48 @@ kind: Secret
 metadata:
   name: mysql-secret
   namespace: skillpulse-prod
+
 type: Opaque
+
 stringData:
   MYSQL_ROOT_PASSWORD: password
   MYSQL_DATABASE: skillpulse
+
 ---
+# =========================================
+# MYSQL PVC
+# =========================================
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+
+metadata:
+  name: mysql-pvc
+  namespace: skillpulse-prod
+
+spec:
+  accessModes:
+    - ReadWriteOnce
+
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+# =========================================
+# MYSQL DEPLOYMENT
+# =========================================
+
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   name: mysql
   namespace: skillpulse-prod
+
 spec:
   replicas: 1
+
   selector:
     matchLabels:
       app: mysql
@@ -44,9 +74,24 @@ spec:
 
           ports:
             - containerPort: 3306
+
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-storage
+
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+
 ---
+# =========================================
+# MYSQL SERVICE
+# =========================================
+
 apiVersion: v1
 kind: Service
+
 metadata:
   name: mysql
   namespace: skillpulse-prod
