@@ -95,7 +95,7 @@ spec:
 
           env:
             - name: DB_HOST
-              value: mysql
+              value: mysql.skillpulse-prod.svc.cluster.local
 
             - name: DB_PORT
               value: "3306"
