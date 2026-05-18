@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: skillpulse-ui
+spec:
+  type: LoadBalancer
+  selector:
+    app: skillpulse
+  ports:
+    - port: 8888
+      targetPort: 8888
