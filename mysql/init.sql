@@ -39,3 +39,18 @@ INSERT INTO learning_logs (skill_id, hours, notes, log_date) VALUES
     (3, 1.5, 'Built REST API with Gin framework', '2026-03-15'),
     (4, 1.0, 'Created Azure DevOps org and project', '2026-03-16'),
     (5, 1.5, 'Terraform basics - providers, resources, state', '2026-03-17');
+CREATE TABLE IF NOT EXISTS skills (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    category VARCHAR(50) DEFAULT '',
+    target_hours INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS learning_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    skill_id INT,
+    hours INT DEFAULT 0,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
