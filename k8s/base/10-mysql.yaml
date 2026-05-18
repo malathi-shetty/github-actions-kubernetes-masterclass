@@ -103,20 +103,7 @@ spec:
               mountPath: /docker-entrypoint-initdb.d
 
       volumes:
-        - name: init-script
+        - name: mysql-storage
+          emptyDir: {}
           configMap:
             name: mysql-init
-
-  volumeClaimTemplates:
-    - metadata:
-        name: mysql-storage
-
-      spec:
-        accessModes:
-          - ReadWriteOnce
-
-        storageClassName: gp2
-
-        resources:
-          requests:
-            storage: 5Gi
