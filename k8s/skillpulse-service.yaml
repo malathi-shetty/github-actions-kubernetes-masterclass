@@ -1,88 +1,238 @@
 # =========================================
-# SkillPulse UI Service
+# FRONTEND DEPLOYMENT
 # =========================================
 
-apiVersion: v1
-kind: Service
+apiVersion: apps/v1
+kind: Deployment
+
 metadata:
-  name: skillpulse-ui
+  name: frontend
+  namespace: skillpulse
+
 spec:
-  type: LoadBalancer
+  replicas: 1
+
   selector:
-    app: skillpulse
-  ports:
-    - name: http
-      port: 8888
-      targetPort: 8888
+    matchLabels:
+      app: frontend
+
+  template:
+    metadata:
+      labels:
+        app: frontend
+
+    spec:
+      containers:
+        - name: frontend
+
+          image: shettymalathi113/skillpulse-frontend:latest
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 80
 
 ---
 # =========================================
-# Grafana Service
+# FRONTEND LOADBALANCER SERVICE
 # =========================================
 
 apiVersion: v1
 kind: Service
+
 metadata:
-  name: grafana
+  name: frontend-ui
+  namespace: skillpulse
+
 spec:
   type: LoadBalancer
+
+  selector:
+    app: frontend
+
+  ports:
+    - port: 8888
+      targetPort: 80
+
+---
+# =========================================
+# BACKEND ROLLOUT
+# =========================================
+
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+
+metadata:
+  name: backend
+  namespace: skillpulse-prod
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: backend
+
+  template:
+    metadata:
+      labels:
+        app: backend
+
+    spec:
+      containers:
+        - name: backend
+
+          image: shettymalathi113/skillpulse-backend:latest
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 8080
+
+          env:
+            - name: DB_HOST
+              value: mysql
+
+            - name: DB_PORT
+              value: "3306"
+
+            - name: PORT
+              value: "8080"
+
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: skillpulse-db
+                  key: MYSQL_USER
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: skillpulse-db
+                  key: MYSQL_PASSWORD
+
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: skillpulse-db
+                  key: MYSQL_DATABASE
+
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+
+        - pause:
+            duration: 30s
+
+        - setWeight: 50
+
+        - pause:
+            duration: 30s
+
+        - setWeight: 100
+
+---
+# =========================================
+# BACKEND SERVICE
+# =========================================
+
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: backend
+  namespace: skillpulse-prod
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: backend
+
+  ports:
+    - port: 8080
+      targetPort: 8080
+
+---
+# =========================================
+# GRAFANA SERVICE
+# =========================================
+
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: grafana
+
+spec:
+  type: LoadBalancer
+
   selector:
     app: grafana
+
   ports:
-    - name: http
-      port: 8080
+    - port: 8080
       targetPort: 3000
 
 ---
 # =========================================
-# Prometheus Service
+# PROMETHEUS SERVICE
 # =========================================
 
 apiVersion: v1
 kind: Service
+
 metadata:
   name: prometheus
+
 spec:
   type: LoadBalancer
+
   selector:
     app: prometheus
+
   ports:
-    - name: http
-      port: 9090
+    - port: 9090
       targetPort: 9090
 
 ---
 # =========================================
-# AIOps UI Service
+# AIOPS SERVICE
 # =========================================
 
 apiVersion: v1
 kind: Service
+
 metadata:
   name: aiops-ui
+
 spec:
   type: LoadBalancer
+
   selector:
     app: aiops
+
   ports:
-    - name: http
-      port: 8090
+    - port: 8090
       targetPort: 8090
 
 ---
 # =========================================
-# ArgoCD Service
+# ARGOCD SERVICE
 # =========================================
 
 apiVersion: v1
 kind: Service
+
 metadata:
   name: argocd-server
+  namespace: argocd
+
 spec:
   type: LoadBalancer
+
   selector:
     app.kubernetes.io/name: argocd-server
+
   ports:
-    - name: http
-      port: 8081
+    - port: 8081
       targetPort: 8080
