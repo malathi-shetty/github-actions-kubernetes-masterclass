@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-west-2c"
+  region = "us-west-2"
 }
 
 module "eks" {
@@ -10,6 +10,7 @@ module "eks" {
   cluster_version = "1.29"
 
   vpc_id     = "vpc-05ca9cbf89bb468e0"
+
   subnet_ids = [
     "subnet-02a82aee776e54c08",
     "subnet-0fb798ad0f9973196",
