@@ -1,8 +1,12 @@
--- SkillPulse Database Schema
-
+-- =========================================
+-- DATABASE
+-- =========================================
 CREATE DATABASE IF NOT EXISTS skillpulse;
 USE skillpulse;
 
+-- =========================================
+-- SKILLS TABLE
+-- =========================================
 CREATE TABLE IF NOT EXISTS skills (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -11,6 +15,9 @@ CREATE TABLE IF NOT EXISTS skills (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- =========================================
+-- LEARNING LOGS TABLE
+-- =========================================
 CREATE TABLE IF NOT EXISTS learning_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     skill_id INT NOT NULL,
@@ -21,7 +28,9 @@ CREATE TABLE IF NOT EXISTS learning_logs (
     FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
 );
 
--- Seed data for demo
+-- =========================================
+-- SEED DATA (SKILLS)
+-- =========================================
 INSERT INTO skills (name, category, target_hours) VALUES
     ('Docker', 'DevOps', 40),
     ('Kubernetes', 'DevOps', 60),
@@ -29,6 +38,9 @@ INSERT INTO skills (name, category, target_hours) VALUES
     ('Azure DevOps', 'Cloud', 30),
     ('Terraform', 'DevOps', 35);
 
+-- =========================================
+-- SEED DATA (LEARNING LOGS)
+-- =========================================
 INSERT INTO learning_logs (skill_id, hours, notes, log_date) VALUES
     (1, 2.0, 'Learned Docker basics - images, containers, volumes', '2026-03-10'),
     (1, 1.5, 'Built multi-stage Dockerfile for Go app', '2026-03-12'),
@@ -39,18 +51,3 @@ INSERT INTO learning_logs (skill_id, hours, notes, log_date) VALUES
     (3, 1.5, 'Built REST API with Gin framework', '2026-03-15'),
     (4, 1.0, 'Created Azure DevOps org and project', '2026-03-16'),
     (5, 1.5, 'Terraform basics - providers, resources, state', '2026-03-17');
-CREATE TABLE IF NOT EXISTS skills (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    category VARCHAR(50) DEFAULT '',
-    target_hours INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS learning_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    skill_id INT,
-    hours INT DEFAULT 0,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
