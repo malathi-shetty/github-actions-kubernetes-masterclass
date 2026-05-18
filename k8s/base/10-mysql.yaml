@@ -1,88 +1,41 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: mysql-secret
+  name: skillpulse-db
   namespace: skillpulse-prod
 
 type: Opaque
 
 stringData:
-  MYSQL_ROOT_PASSWORD: password
+  MYSQL_ROOT_PASSWORD: rootpassword123
   MYSQL_DATABASE: skillpulse
+  MYSQL_USER: skillpulse
+  MYSQL_PASSWORD: skillpulse123
 
 ---
 # =========================================
-# MYSQL PVC
+# MYSQL INIT SQL
 # =========================================
 
 apiVersion: v1
-kind: PersistentVolumeClaim
+kind: ConfigMap
 
 metadata:
-  name: mysql-pvc
+  name: mysql-init
   namespace: skillpulse-prod
 
-spec:
-  accessModes:
-    - ReadWriteOnce
+data:
+  init.sql: |
+    CREATE DATABASE IF NOT EXISTS skillpulse;
+    USE skillpulse;
 
-  resources:
-    requests:
-      storage: 5Gi
-
----
-# =========================================
-# MYSQL DEPLOYMENT
-# =========================================
-
-apiVersion: apps/v1
-kind: Deployment
-
-metadata:
-  name: mysql
-  namespace: skillpulse-prod
-
-spec:
-  replicas: 1
-
-  selector:
-    matchLabels:
-      app: mysql
-
-  template:
-    metadata:
-      labels:
-        app: mysql
-
-    spec:
-      containers:
-        - name: mysql
-          image: mysql:8
-
-          env:
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-secret
-                  key: MYSQL_ROOT_PASSWORD
-
-            - name: MYSQL_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-secret
-                  key: MYSQL_DATABASE
-
-          ports:
-            - containerPort: 3306
-
-          volumeMounts:
-            - mountPath: /var/lib/mysql
-              name: mysql-storage
-
-      volumes:
-        - name: mysql-storage
-          persistentVolumeClaim:
-            claimName: mysql-pvc
+    CREATE TABLE IF NOT EXISTS skills (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        category VARCHAR(50) DEFAULT '',
+        target_hours INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
 ---
 # =========================================
@@ -103,3 +56,67 @@ spec:
   ports:
     - port: 3306
       targetPort: 3306
+
+---
+# =========================================
+# MYSQL STATEFULSET
+# =========================================
+
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: mysql
+  namespace: skillpulse-prod
+
+spec:
+  serviceName: mysql
+
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: mysql
+
+  template:
+    metadata:
+      labels:
+        app: mysql
+
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8
+
+          ports:
+            - containerPort: 3306
+
+          envFrom:
+            - secretRef:
+                name: skillpulse-db
+
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d
+
+      volumes:
+        - name: init-script
+          configMap:
+            name: mysql-init
+
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-storage
+
+      spec:
+        accessModes:
+          - ReadWriteOnce
+
+        storageClassName: gp2
+
+        resources:
+          requests:
+            storage: 5Gi
