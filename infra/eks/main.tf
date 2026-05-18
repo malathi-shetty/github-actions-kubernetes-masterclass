@@ -10,7 +10,6 @@ module "eks" {
   cluster_version = "1.29"
 
   vpc_id     = "vpc-05ca9cbf89bb468e0"
-
   subnet_ids = [
     "subnet-02a82aee776e54c08",
     "subnet-0fb798ad0f9973196",
@@ -18,13 +17,20 @@ module "eks" {
     "subnet-0a467b52ac953ee48"
   ]
 
+  cluster_endpoint_public_access  = true
+  cluster_endpoint_private_access = true
+
+  cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
+
   eks_managed_node_groups = {
     default = {
       desired_size   = 2
       max_size       = 3
       min_size       = 1
       instance_types = ["t3.xlarge"]
-      ami_type = "AL2_x86_64"
+
+     
+      ami_type = "AL2023_x86_64_STANDARD"
     }
   }
 }
