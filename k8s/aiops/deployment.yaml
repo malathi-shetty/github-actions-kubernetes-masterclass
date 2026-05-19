@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: aiops
-        image: your-docker-image:latest
+        image: shettymalathi113/aiops-ui:latest
         ports:
         - containerPort: 8090
 ---
