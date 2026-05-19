@@ -10,15 +10,6 @@ labels:
 resources:
   - ../../base
 
-images:
-  - name: skillpulse-backend
-    newName: shettymalathi113/skillpulse-backend
-    newTag: latest
-
-  - name: skillpulse-frontend
-    newName: shettymalathi113/skillpulse-frontend
-    newTag: latest
-
 patches:
   - target:
       kind: Rollout
