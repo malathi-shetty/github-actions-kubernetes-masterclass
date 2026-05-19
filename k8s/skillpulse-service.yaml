@@ -6,6 +6,9 @@ kind: Deployment
 metadata:
   name: frontend
   namespace: skillpulse-prod
+  labels:
+    app: frontend
+    env: prod
 spec:
   replicas: 1
   selector:
@@ -29,6 +32,9 @@ kind: Service
 metadata:
   name: frontend
   namespace: skillpulse-prod
+  labels:
+    app: frontend
+    env: prod 
 spec:
   type: ClusterIP
   selector:
@@ -46,6 +52,9 @@ kind: Deployment
 metadata:
   name: backend
   namespace: skillpulse-prod
+  labels:
+    app: backend
+    env: prod
 spec:
   replicas: 3
   selector:
@@ -91,6 +100,9 @@ kind: Service
 metadata:
   name: backend
   namespace: skillpulse-prod
+  labels:
+    app: backend
+    env: prod
 spec:
   type: ClusterIP
   selector:
