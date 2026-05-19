@@ -3,20 +3,21 @@ kind: Kustomization
 
 namespace: skillpulse-prod
 
+labels:
+  - pairs:
+      env: prod
+
 resources:
   - ../../base
-
-commonLabels:
-  env: prod
 
 images:
   - name: skillpulse-backend
     newName: shettymalathi113/skillpulse-backend
-    newTag: e98b107eb413f249e0df9e149524ea738e66159a
+    newTag: latest
 
   - name: skillpulse-frontend
     newName: shettymalathi113/skillpulse-frontend
-    newTag: e98b107eb413f249e0df9e149524ea738e66159a
+    newTag: latest
 
 patches:
   - target:
