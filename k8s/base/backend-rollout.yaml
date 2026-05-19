@@ -1,10 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
-
 metadata:
   name: backend
-  labels:
-    app: backend
 
 spec:
   replicas: 1
@@ -22,8 +19,6 @@ spec:
       containers:
         - name: backend
           image: skillpulse-backend
-
-          imagePullPolicy: Always
 
           ports:
             - containerPort: 8080
@@ -68,3 +63,19 @@ spec:
             duration: 30s
 
         - setWeight: 100
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: backend
+
+  ports:
+    - port: 8080
+      targetPort: 8080
