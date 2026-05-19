@@ -1,5 +1,5 @@
 # =========================================
-# FRONTEND DEPLOYMENT (KEEP)
+# FRONTEND DEPLOYMENT
 # =========================================
 apiVersion: apps/v1
 kind: Deployment
@@ -23,7 +23,7 @@ spec:
             - containerPort: 80
 
 ---
-# FRONTEND SERVICE (KEEP - ClusterIP ONLY)
+# FRONTEND SERVICE (INTERNAL ONLY)
 apiVersion: v1
 kind: Service
 metadata:
@@ -39,7 +39,7 @@ spec:
 
 ---
 # =========================================
-# BACKEND DEPLOYMENT (KEEP)
+# BACKEND DEPLOYMENT
 # =========================================
 apiVersion: apps/v1
 kind: Deployment
@@ -85,7 +85,7 @@ spec:
                   key: MYSQL_DATABASE
 
 ---
-# BACKEND SERVICE (KEEP - ClusterIP ONLY)
+# BACKEND SERVICE (INTERNAL ONLY)
 apiVersion: v1
 kind: Service
 metadata:
