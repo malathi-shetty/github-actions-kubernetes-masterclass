@@ -7,7 +7,7 @@ module "eks" {
   version = "~> 20.0"
 
   cluster_name    = "skillpulse-cluster"
-  cluster_version = "1.29"
+  cluster_version = "1.31"
 
   vpc_id = "vpc-05ca9cbf89bb468e0"
 
