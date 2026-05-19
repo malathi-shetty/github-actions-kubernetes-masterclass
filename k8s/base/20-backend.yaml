@@ -3,6 +3,9 @@ kind: Rollout
 metadata:
   name: backend
   namespace: skillpulse-prod   # IMPORTANT FIX
+  labels:
+    app: backend
+    env: prod
 spec:
   replicas: 3
 
