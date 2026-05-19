@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: frontend
   namespace: skillpulse-prod
+  labels:
+    app: frontend
+    env: prod
 spec:
   type: ClusterIP
   selector:
