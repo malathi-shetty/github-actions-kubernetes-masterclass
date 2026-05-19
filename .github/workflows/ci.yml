@@ -11,26 +11,31 @@ env:
 permissions:
   contents: write
 
+# =========================================================
+# 1. SECURITY GATE (BLOCK BAD CODE)
+# =========================================================
 jobs:
 
-# =========================
-# SECURITY SCAN (BLOCK PIPELINE)
-# =========================
   security:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Trivy Scan (FAIL ON HIGH/CRITICAL)
+      - name: Trivy FS Scan (BLOCK HIGH/CRITICAL)
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
           severity: CRITICAL,HIGH
           exit-code: 1
 
-# =========================
-# BUILD + PUSH
-# =========================
+      - name: Gitleaks Scan
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/path \
+          zricethezav/gitleaks:latest detect --source="/path"
+
+# =========================================================
+# 2. BUILD + PUSH IMAGES
+# =========================================================
   build:
     needs: security
     runs-on: ubuntu-latest
@@ -53,11 +58,23 @@ jobs:
           docker build -t $IMAGE_FRONTEND:${{ github.sha }} ./frontend
           docker push $IMAGE_FRONTEND:${{ github.sha }}
 
-# =========================
-# GITOPS UPDATE (NO DEPLOY HERE)
-# =========================
-  gitops:
+# =========================================================
+# 3. MANUAL APPROVAL (PRODUCTION GATE)
+# =========================================================
+  approval:
     needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: production   # 🔥 GitHub ENV approval happens here
+
+    steps:
+      - run: echo "Approved for production deploy"
+
+# =========================================================
+# 4. GITOPS DEPLOY (ARGOCD STYLE)
+# =========================================================
+  gitops:
+    needs: approval
     runs-on: ubuntu-latest
 
     steps:
@@ -65,14 +82,24 @@ jobs:
         with:
           repository: malathi-shetty/github-actions-kubernetes-masterclass
           token: ${{ secrets.GITOPS_TOKEN }}
+          fetch-depth: 0
 
-      - name: Update Image Tags
+      - name: Install Kustomize
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          sudo mv kustomize /usr/local/bin/
+
+      - name: Update Backend Image
         run: |
           cd k8s/overlays/prod
           kustomize edit set image backend=$IMAGE_BACKEND:${{ github.sha }}
+
+      - name: Update Frontend Image
+        run: |
+          cd k8s/overlays/prod
           kustomize edit set image frontend=$IMAGE_FRONTEND:${{ github.sha }}
 
-      - name: Commit
+      - name: Commit & Push
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
