@@ -84,8 +84,8 @@ jobs:
 
       - name: Commit & Push
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "shettymalathi113"
+          git config user.email "shettymalathi113@gmail.com"
 
           git add .
           git commit -m "update images ${{ github.sha }}" || echo "no changes"
