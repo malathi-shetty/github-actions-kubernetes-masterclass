@@ -7,9 +7,11 @@ module "eks" {
   version = "~> 20.0"
 
   cluster_name    = "skillpulse-cluster"
+
+  # 🔥 IMPORTANT: match EXISTING cluster version (yours is 1.31)
   cluster_version = "1.31"
 
-  vpc_id = "vpc-05ca9cbf89bb468e0"
+  vpc_id     = "vpc-05ca9cbf89bb468e0"
 
   subnet_ids = [
     "subnet-02a82aee776e54c08",
@@ -26,8 +28,9 @@ module "eks" {
   eks_managed_node_groups = {
     default = {
       desired_size   = 2
-      max_size       = 3
       min_size       = 1
+      max_size       = 3
+
       instance_types = ["t3.xlarge"]
     }
   }
