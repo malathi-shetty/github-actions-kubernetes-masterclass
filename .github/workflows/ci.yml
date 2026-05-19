@@ -51,11 +51,14 @@ jobs:
           docker push $IMAGE_FRONTEND:${{ github.sha }}
 
 # =========================================================
-# UPDATE GITOPS (FIXED)
+# UPDATE GITOPS (FIXED PROPERLY)
 # =========================================================
   gitops:
     runs-on: ubuntu-latest
     needs: [build-backend, build-frontend]
+
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout GitOps Repo
@@ -64,20 +67,26 @@ jobs:
           repository: malathi-shetty/github-actions-kubernetes-masterclass
           token: ${{ secrets.GITOPS_TOKEN }}
 
+      - name: Install Kustomize
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          sudo mv kustomize /usr/local/bin/
+
       - name: Update Backend Image
         run: |
           cd k8s/overlays/dev
-          kustomize edit set image skillpulse-backend=$IMAGE_BACKEND:${{ github.sha }}
+          kustomize edit set image shettymalathi113/skillpulse-backend=${IMAGE_BACKEND}:${{ github.sha }}
 
       - name: Update Frontend Image
         run: |
           cd k8s/overlays/dev
-          kustomize edit set image skillpulse-frontend=$IMAGE_FRONTEND:${{ github.sha }}
-          
+          kustomize edit set image shettymalathi113/skillpulse-frontend=${IMAGE_FRONTEND}:${{ github.sha }}
+
       - name: Commit & Push
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+
           git add .
           git commit -m "update images ${{ github.sha }}" || echo "no changes"
           git push
