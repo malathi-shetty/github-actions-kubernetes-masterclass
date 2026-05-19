@@ -1,62 +1,15 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Rollout
+apiVersion: v1
+kind: Service
+
 metadata:
   name: backend
-  namespace: skillpulse-prod   # IMPORTANT FIX
-  labels:
-    app: backend
-    env: prod
+
 spec:
-  replicas: 3
+  type: ClusterIP
 
   selector:
-    matchLabels:
-      app: backend
+    app: backend
 
-  template:
-    metadata:
-      labels:
-        app: backend
-
-    spec:
-      containers:
-        - name: backend
-          image: shettymalathi113/skillpulse-backend:latest
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8080
-
-          env:
-            - name: DB_HOST
-              value: mysql
-            - name: DB_PORT
-              value: "3306"
-            - name: PORT
-              value: "8080"
-
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: skillpulse-db
-                  key: MYSQL_USER
-
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: skillpulse-db
-                  key: MYSQL_PASSWORD
-
-            - name: DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: skillpulse-db
-                  key: MYSQL_DATABASE
-
-  strategy:
-    canary:
-      steps:
-        - setWeight: 20
-        - pause: { duration: 30s }
-        - setWeight: 50
-        - pause: { duration: 30s }
-        - setWeight: 100
+  ports:
+    - port: 80
+      targetPort: 8080
