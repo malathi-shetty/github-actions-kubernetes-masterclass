@@ -3,12 +3,11 @@ kind: Kustomization
 
 namespace: skillpulse-prod
 
-commonLabels:
-  env: prod
-
 resources:
   - ../../base
-  - ingress.yaml
+
+commonLabels:
+  env: prod
 
 images:
   - name: skillpulse-backend
