@@ -20,6 +20,9 @@ kind: Deployment
 metadata:
   name: frontend
   namespace: skillpulse-prod
+  labels:
+    app: frontend
+    env: prod
 spec:
   replicas: 1
   selector:
