@@ -18,7 +18,7 @@ patches:
 images:
 - name: backend
   newName: shettymalathi113/skillpulse-backend
-  newTag: 84a6ecbef28398bc637dfb13fd8647e123348d04
+  newTag: 7aff93c4b5c9edbdb9a745738aa65bc6224be8c3
 - name: frontend
   newName: shettymalathi113/skillpulse-frontend
-  newTag: 84a6ecbef28398bc637dfb13fd8647e123348d04
+  newTag: 7aff93c4b5c9edbdb9a745738aa65bc6224be8c3
