@@ -7,3 +7,4 @@ resources:
   - frontend.yaml
   - backend-rollout.yaml
   - secret.yaml
+  - mysql-init-configmap.yaml
