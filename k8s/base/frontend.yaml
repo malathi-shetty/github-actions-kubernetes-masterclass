@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: image: shettymalathi113/skillpulse-frontend:latest
+          image: shettymalathi113/skillpulse-frontend:latest
           ports:
             - containerPort: 80
 
