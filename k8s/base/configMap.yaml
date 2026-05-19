@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-init
+  namespace: skillpulse-prod
+
+data:
+  init.sql: |
+    CREATE DATABASE IF NOT EXISTS skillpulse;
+    USE skillpulse;
+
+    CREATE TABLE IF NOT EXISTS skills (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      category VARCHAR(50) DEFAULT '',
+      target_hours INT DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
