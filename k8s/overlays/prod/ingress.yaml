@@ -5,23 +5,21 @@ metadata:
   namespace: skillpulse-prod
 spec:
   ingressClassName: nginx
-
   rules:
     - http:
         paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
 
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: frontend
-              port:
-                number: 80
-
-        - path: /api
-          pathType: Prefix
-          backend:
-            service:
-              name: backend
-              port:
-                number: 8080
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8080
