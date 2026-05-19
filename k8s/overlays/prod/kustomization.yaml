@@ -4,14 +4,21 @@ kind: Kustomization
 namespace: skillpulse-prod
 
 resources:
-  - ../../base
-  - ingress.yaml
+- ../../base
+- ingress.yaml
 
 patches:
-  - target:
-      kind: Deployment
-      name: backend
-    patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 3
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 3
+  target:
+    kind: Deployment
+    name: backend
+images:
+- name: backend
+  newName: shettymalathi113/skillpulse-backend
+  newTag: b2a19e5008d12d92e89c56b28abcd271442e8400
+- name: frontend
+  newName: shettymalathi113/skillpulse-frontend
+  newTag: b2a19e5008d12d92e89c56b28abcd271442e8400
