@@ -8,7 +8,7 @@ spec:
   ingressClassName: nginx
 
   rules:
-    - host: skillpulse.example.com
+    - host: 
 
       http:
         paths:
