@@ -5,24 +5,23 @@ namespace: skillpulse-prod
 
 commonLabels:
   env: prod
-  app: skillpulse
 
 resources:
   - ../../base
   - ingress.yaml
 
 images:
-  - name: backend
+  - name: skillpulse-backend
     newName: shettymalathi113/skillpulse-backend
     newTag: e98b107eb413f249e0df9e149524ea738e66159a
 
-  - name: frontend
+  - name: skillpulse-frontend
     newName: shettymalathi113/skillpulse-frontend
     newTag: e98b107eb413f249e0df9e149524ea738e66159a
 
 patches:
   - target:
-      kind: Deployment
+      kind: Rollout
       name: backend
     patch: |-
       - op: replace
