@@ -9,7 +9,7 @@ env:
   IMAGE_FRONTEND: ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-frontend
 
 permissions:
-  contents: write   # REQUIRED for git push
+  contents: write
 
 jobs:
 
@@ -52,36 +52,33 @@ jobs:
           docker push $IMAGE_FRONTEND:${{ github.sha }}
 
 # =========================================================
-# UPDATE GITOPS (FIXED)
+# GITOPS UPDATE (FIXED)
 # =========================================================
-gitops:
-  runs-on: ubuntu-latest
-  needs: [build-backend, build-frontend]
+  gitops:
+    runs-on: ubuntu-latest
+    needs: [build-backend, build-frontend]
 
-  permissions:
-    contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
 
-  steps:
-    - uses: actions/checkout@v4
-      with:
-        persist-credentials: true
-        fetch-depth: 0
+      - name: Install Kustomize
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          sudo mv kustomize /usr/local/bin/
 
-    - name: Install Kustomize
-      run: |
-        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
-        sudo mv kustomize /usr/local/bin/
+      - name: Update Images
+        run: |
+          cd k8s/overlays/dev
+          kustomize edit set image skillpulse-backend=${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-backend:${{ github.sha }}
+          kustomize edit set image skillpulse-frontend=${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-frontend:${{ github.sha }}
 
-    - name: Update Images
-      run: |
-        cd k8s/overlays/dev
-        kustomize edit set image skillpulse-backend=${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-backend:${{ github.sha }}
-        kustomize edit set image skillpulse-frontend=${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-frontend:${{ github.sha }}
-
-    - name: Commit & Push
-      run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
-        git add .
-        git commit -m "update images ${{ github.sha }}" || echo "no changes"
-        git push origin main
+      - name: Commit & Push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "update images ${{ github.sha }}" || echo "no changes"
+          git push origin main
