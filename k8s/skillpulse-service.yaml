@@ -5,108 +5,136 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
-  namespace: skillpulse-prod
   labels:
     app: frontend
-    env: prod
+
 spec:
   replicas: 1
+
   selector:
     matchLabels:
       app: frontend
+
   template:
     metadata:
       labels:
         app: frontend
+
     spec:
       containers:
         - name: frontend
-          image: shettymalathi113/skillpulse-frontend:latest
+          image: skillpulse-frontend
+
           ports:
             - containerPort: 80
 
 ---
-# FRONTEND SERVICE (INTERNAL ONLY)
+# =========================================
+# FRONTEND SERVICE
+# =========================================
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend
-  namespace: skillpulse-prod
-  labels:
-    app: frontend
-    env: prod 
+
 spec:
   type: ClusterIP
+
   selector:
     app: frontend
+
   ports:
     - port: 80
       targetPort: 80
 
 ---
 # =========================================
-# BACKEND DEPLOYMENT
+# BACKEND ROLLOUT
 # =========================================
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+
 metadata:
   name: backend
-  namespace: skillpulse-prod
   labels:
     app: backend
-    env: prod
+
 spec:
-  replicas: 3
+  replicas: 1
+
   selector:
     matchLabels:
       app: backend
+
   template:
     metadata:
       labels:
         app: backend
+
     spec:
       containers:
         - name: backend
-          image: shettymalathi113/skillpulse-backend:latest
+          image: skillpulse-backend
+
           ports:
             - containerPort: 8080
+
           env:
             - name: DB_HOST
               value: mysql
+
             - name: DB_PORT
               value: "3306"
+
             - name: PORT
               value: "8080"
+
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
                   name: skillpulse-db
                   key: MYSQL_USER
+
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: skillpulse-db
                   key: MYSQL_PASSWORD
+
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:
                   name: skillpulse-db
                   key: MYSQL_DATABASE
 
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause:
+            duration: 30s
+
+        - setWeight: 50
+        - pause:
+            duration: 30s
+
+        - setWeight: 100
+
 ---
-# BACKEND SERVICE (INTERNAL ONLY)
+# =========================================
+# BACKEND SERVICE
+# =========================================
 apiVersion: v1
 kind: Service
 metadata:
   name: backend
-  namespace: skillpulse-prod
-  labels:
-    app: backend
-    env: prod
+
 spec:
   type: ClusterIP
+
   selector:
     app: backend
+
   ports:
     - port: 8080
       targetPort: 8080
