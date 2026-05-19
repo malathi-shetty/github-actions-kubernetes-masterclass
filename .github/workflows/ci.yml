@@ -66,12 +66,14 @@ jobs:
 
       - name: Update Backend Image
         run: |
-          sed -i "s|image: .*skillpulse-backend.*|image: $IMAGE_BACKEND:${{ github.sha }}|g" k8s/overlays/dev/backend.yaml
+          cd k8s/overlays/dev
+          kustomize edit set image skillpulse-backend=$IMAGE_BACKEND:${{ github.sha }}
 
       - name: Update Frontend Image
         run: |
-          sed -i "s|image: .*skillpulse-frontend.*|image: $IMAGE_FRONTEND:${{ github.sha }}|g" k8s/overlays/dev/frontend.yaml
-
+          cd k8s/overlays/dev
+          kustomize edit set image skillpulse-frontend=$IMAGE_FRONTEND:${{ github.sha }}
+          
       - name: Commit & Push
         run: |
           git config user.name "github-actions"
