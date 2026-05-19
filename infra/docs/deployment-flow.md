@@ -122,3 +122,40 @@ Planned:
 * HPA autoscaling
 * Terraform infrastructure
 * AI-driven anomaly detection
+
+
+# Deployment Flow
+
+## CI/CD Pipeline
+
+1. Developer pushes code to GitHub
+2. GitHub Actions builds Docker image
+3. Docker image pushed to DockerHub
+4. ArgoCD detects Git changes
+5. Kubernetes deployment updates automatically
+6. Argo Rollouts performs canary deployment
+7. Prometheus monitors metrics
+8. Grafana displays dashboards
+
+## Rollback
+
+Rollback possible using:
+- Argo Rollouts
+- Git revert
+- ArgoCD sync
+
+## Monitoring
+
+Metrics:
+- CPU
+- Memory
+- Pod health
+- Rollout status
+- Node metrics
+
+## Recovery
+
+Cluster can be recreated from:
+- GitHub repo
+- ArgoCD applications
+- Kubernetes manifests

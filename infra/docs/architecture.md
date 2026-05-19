@@ -154,3 +154,36 @@ Recovery sources:
 * Monitoring configs
 
 Cluster can be rebuilt from GitOps manifests.
+
+
+# SkillPulse Architecture
+
+## Stack
+
+- AWS EKS
+- Kubernetes
+- ArgoCD
+- GitHub Actions
+- Argo Rollouts
+- Prometheus
+- Grafana
+- MySQL StatefulSet
+
+## Environments
+
+- skillpulse-dev
+- skillpulse-staging
+- skillpulse-prod
+
+## Deployment Flow
+
+Developer Push -> GitHub Actions -> Docker Build -> DockerHub Push -> ArgoCD Sync -> Kubernetes Deploy
+
+## Monitoring
+
+Prometheus collects metrics.
+Grafana visualizes dashboards.
+
+## GitOps
+
+ArgoCD continuously syncs Kubernetes manifests from GitHub repository.
