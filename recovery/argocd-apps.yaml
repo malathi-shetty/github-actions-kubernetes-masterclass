@@ -1,0 +1,957 @@
+apiVersion: v1
+items:
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{},"name":"skillpulse-dev","namespace":"argocd"},"spec":{"destination":{"namespace":"skillpulse-dev","server":"https://kubernetes.default.svc"},"project":"default","source":{"path":"k8s/overlays/dev","repoURL":"https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git","targetRevision":"main"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}
+    creationTimestamp: "2026-05-19T13:24:39Z"
+    generation: 347
+    name: skillpulse-dev
+    namespace: argocd
+    resourceVersion: "318158"
+    uid: e7cc85d2-8409-414b-b29b-d166bea649bc
+  spec:
+    destination:
+      namespace: skillpulse-dev
+      server: https://kubernetes.default.svc
+    project: default
+    source:
+      path: k8s/overlays/dev
+      repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+      targetRevision: main
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+  status:
+    controllerNamespace: argocd
+    health:
+      lastTransitionTime: "2026-05-19T18:35:48Z"
+      status: Healthy
+    history:
+    - deployStartedAt: "2026-05-19T15:38:24Z"
+      deployedAt: "2026-05-19T15:38:25Z"
+      id: 5
+      initiatedBy:
+        username: admin
+      revision: cb5331bcf10e59077fcce37b8b838726f9c129eb
+      source:
+        path: k8s/overlays/dev
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T15:39:44Z"
+      deployedAt: "2026-05-19T15:39:45Z"
+      id: 6
+      initiatedBy:
+        username: admin
+      revision: cb5331bcf10e59077fcce37b8b838726f9c129eb
+      source:
+        path: k8s/overlays/dev
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T15:46:30Z"
+      deployedAt: "2026-05-19T15:46:31Z"
+      id: 7
+      initiatedBy:
+        username: admin
+      revision: cb5331bcf10e59077fcce37b8b838726f9c129eb
+      source:
+        path: k8s/overlays/dev
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T17:20:27Z"
+      deployedAt: "2026-05-19T17:25:44Z"
+      id: 8
+      initiatedBy:
+        automated: true
+      revision: 484fd8fb938171def1990c5df8ae335530db1cd3
+      source:
+        path: k8s/overlays/dev
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T17:26:25Z"
+      deployedAt: "2026-05-19T17:26:26Z"
+      id: 9
+      initiatedBy:
+        username: admin
+      revision: c230111ec93fd775b2182ee9f2d94c39eff83cff
+      source:
+        path: k8s/overlays/dev
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T17:37:11Z"
+      deployedAt: "2026-05-19T17:37:13Z"
+      id: 10
+      initiatedBy:
+        username: admin
+      revision: be76784aaa1ad98e0f809b73d270d121ccfe326f
+      source:
+        path: k8s/overlays/dev
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T17:56:26Z"
+      deployedAt: "2026-05-19T17:56:27Z"
+      id: 11
+      initiatedBy:
+        username: admin
+      revision: ff316d04dbd5850aafce3a4029b45d0fa938e050
+      source:
+        path: k8s/overlays/dev
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:04:58Z"
+      deployedAt: "2026-05-19T18:05:01Z"
+      id: 12
+      initiatedBy:
+        username: admin
+      revision: 7904d288223bbe09b537abe05a68af0563615a64
+      source:
+        path: k8s/overlays/dev
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:16:43Z"
+      deployedAt: "2026-05-19T18:16:45Z"
+      id: 13
+      initiatedBy:
+        username: admin
+      revision: 72ac746f5c80df573224e5f977cbd4d4326b2fce
+      source:
+        path: k8s/overlays/dev
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:35:47Z"
+      deployedAt: "2026-05-19T18:35:48Z"
+      id: 14
+      initiatedBy:
+        automated: true
+      revision: 76a5244f876e92395e1481343a0a0864b2970609
+      source:
+        path: k8s/overlays/dev
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    operationState:
+      finishedAt: "2026-05-19T18:35:48Z"
+      message: successfully synced (all tasks run)
+      operation:
+        initiatedBy:
+          automated: true
+        retry:
+          limit: 5
+        sync:
+          prune: true
+          revision: 76a5244f876e92395e1481343a0a0864b2970609
+          source:
+            path: k8s/overlays/dev
+            repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+            targetRevision: main
+      phase: Succeeded
+      startedAt: "2026-05-19T18:35:47Z"
+      syncResult:
+        resources:
+        - group: ""
+          hookPhase: Running
+          kind: Namespace
+          message: namespace/skillpulse-dev unchanged
+          name: skillpulse-dev
+          namespace: skillpulse-dev
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Secret
+          message: secret/skillpulse-db configured
+          name: skillpulse-db
+          namespace: skillpulse-dev
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: ConfigMap
+          message: configmap/mysql-init unchanged
+          name: mysql-init
+          namespace: skillpulse-dev
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Service
+          message: service/frontend unchanged
+          name: frontend
+          namespace: skillpulse-dev
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Service
+          message: service/mysql unchanged
+          name: mysql
+          namespace: skillpulse-dev
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Service
+          message: service/backend created
+          name: backend
+          namespace: skillpulse-dev
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apps
+          hookPhase: Running
+          images:
+          - shettymalathi113/skillpulse-frontend:latest
+          kind: Deployment
+          message: deployment.apps/frontend unchanged
+          name: frontend
+          namespace: skillpulse-dev
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apps
+          hookPhase: Running
+          images:
+          - mysql:8
+          kind: StatefulSet
+          message: statefulset.apps/mysql configured
+          name: mysql
+          namespace: skillpulse-dev
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: argoproj.io
+          hookPhase: Running
+          images:
+          - shettymalathi113/skillpulse-backend:latest
+          kind: Rollout
+          message: rollout.argoproj.io/backend configured
+          name: backend
+          namespace: skillpulse-dev
+          status: Synced
+          syncPhase: Sync
+          version: v1alpha1
+        revision: 76a5244f876e92395e1481343a0a0864b2970609
+        source:
+          path: k8s/overlays/dev
+          repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+          targetRevision: main
+    reconciledAt: "2026-05-19T19:10:26Z"
+    resourceHealthSource: appTree
+    resources:
+    - kind: ConfigMap
+      name: mysql-init
+      namespace: skillpulse-dev
+      status: Synced
+      version: v1
+    - kind: Namespace
+      name: skillpulse-dev
+      status: Synced
+      version: v1
+    - kind: Secret
+      name: skillpulse-db
+      namespace: skillpulse-dev
+      status: Synced
+      version: v1
+    - kind: Service
+      name: backend
+      namespace: skillpulse-dev
+      status: Synced
+      version: v1
+    - kind: Service
+      name: frontend
+      namespace: skillpulse-dev
+      status: Synced
+      version: v1
+    - kind: Service
+      name: mysql
+      namespace: skillpulse-dev
+      status: Synced
+      version: v1
+    - group: apps
+      kind: Deployment
+      name: frontend
+      namespace: skillpulse-dev
+      status: Synced
+      version: v1
+    - group: apps
+      kind: StatefulSet
+      name: mysql
+      namespace: skillpulse-dev
+      status: Synced
+      version: v1
+    - group: argoproj.io
+      kind: Rollout
+      name: backend
+      namespace: skillpulse-dev
+      status: Synced
+      version: v1alpha1
+    sourceHydrator: {}
+    sourceType: Kustomize
+    summary:
+      images:
+      - mysql:8
+      - shettymalathi113/skillpulse-backend:latest
+      - shettymalathi113/skillpulse-frontend:latest
+    sync:
+      comparedTo:
+        destination:
+          namespace: skillpulse-dev
+          server: https://kubernetes.default.svc
+        source:
+          path: k8s/overlays/dev
+          repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+          targetRevision: main
+      revision: 7b90911462b8ca9641029a51e9b62819707f4eff
+      status: Synced
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{},"name":"skillpulse-prod","namespace":"argocd"},"spec":{"destination":{"namespace":"skillpulse-prod","server":"https://kubernetes.default.svc"},"project":"default","source":{"path":"k8s/overlays/prod","repoURL":"https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git","targetRevision":"main"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true},"syncOptions":["CreateNamespace=true"]}}}
+    creationTimestamp: "2026-05-19T13:24:41Z"
+    generation: 735
+    name: skillpulse-prod
+    namespace: argocd
+    resourceVersion: "317514"
+    uid: 737866ed-8640-47ae-8009-62afaf85d302
+  spec:
+    destination:
+      namespace: skillpulse-prod
+      server: https://kubernetes.default.svc
+    project: default
+    source:
+      path: k8s/overlays/prod
+      repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+      targetRevision: main
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+      - CreateNamespace=true
+  status:
+    controllerNamespace: argocd
+    health:
+      lastTransitionTime: "2026-05-19T18:41:51Z"
+      status: Healthy
+    history:
+    - deployStartedAt: "2026-05-19T18:06:15Z"
+      deployedAt: "2026-05-19T18:06:16Z"
+      id: 14
+      initiatedBy:
+        automated: true
+      revision: 7904d288223bbe09b537abe05a68af0563615a64
+      source:
+        path: k8s/overlays/prod
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:07:42Z"
+      deployedAt: "2026-05-19T18:07:43Z"
+      id: 15
+      initiatedBy:
+        username: admin
+      revision: 7904d288223bbe09b537abe05a68af0563615a64
+      source:
+        path: k8s/overlays/prod
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:09:34Z"
+      deployedAt: "2026-05-19T18:09:36Z"
+      id: 16
+      initiatedBy:
+        username: admin
+      revision: 7904d288223bbe09b537abe05a68af0563615a64
+      source:
+        path: k8s/overlays/prod
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:20:05Z"
+      deployedAt: "2026-05-19T18:20:06Z"
+      id: 17
+      initiatedBy:
+        automated: true
+      revision: 72ac746f5c80df573224e5f977cbd4d4326b2fce
+      source:
+        path: k8s/overlays/prod
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:30:00Z"
+      deployedAt: "2026-05-19T18:30:01Z"
+      id: 18
+      initiatedBy:
+        username: admin
+      revision: 15e0d00844c30c35107e58cc07a2e12785ebb0b5
+      source:
+        path: k8s/overlays/prod
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:30:25Z"
+      deployedAt: "2026-05-19T18:30:26Z"
+      id: 19
+      initiatedBy:
+        username: admin
+      revision: 15e0d00844c30c35107e58cc07a2e12785ebb0b5
+      source:
+        path: k8s/overlays/prod
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:34:34Z"
+      deployedAt: "2026-05-19T18:34:36Z"
+      id: 20
+      initiatedBy:
+        username: admin
+      revision: 76a5244f876e92395e1481343a0a0864b2970609
+      source:
+        path: k8s/overlays/prod
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:36:01Z"
+      deployedAt: "2026-05-19T18:36:03Z"
+      id: 21
+      initiatedBy:
+        username: admin
+      revision: 76a5244f876e92395e1481343a0a0864b2970609
+      source:
+        path: k8s/overlays/prod
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:39:43Z"
+      deployedAt: "2026-05-19T18:39:44Z"
+      id: 22
+      initiatedBy:
+        username: admin
+      revision: 7b90911462b8ca9641029a51e9b62819707f4eff
+      source:
+        path: k8s/overlays/prod
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:40:42Z"
+      deployedAt: "2026-05-19T18:40:44Z"
+      id: 23
+      initiatedBy:
+        username: admin
+      revision: 7b90911462b8ca9641029a51e9b62819707f4eff
+      source:
+        path: k8s/overlays/prod
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    operationState:
+      finishedAt: "2026-05-19T18:40:44Z"
+      message: successfully synced (all tasks run)
+      operation:
+        initiatedBy:
+          username: admin
+        retry: {}
+        sync:
+          revision: 7b90911462b8ca9641029a51e9b62819707f4eff
+          source:
+            path: k8s/overlays/prod
+            repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+            targetRevision: main
+          syncOptions:
+          - CreateNamespace=true
+          syncStrategy:
+            hook: {}
+      phase: Succeeded
+      startedAt: "2026-05-19T18:40:42Z"
+      syncResult:
+        resources:
+        - group: ""
+          hookPhase: Running
+          kind: Namespace
+          message: namespace/skillpulse-prod unchanged
+          name: skillpulse-prod
+          namespace: skillpulse-prod
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Secret
+          message: secret/skillpulse-db configured
+          name: skillpulse-db
+          namespace: skillpulse-prod
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: ConfigMap
+          message: configmap/mysql-init unchanged
+          name: mysql-init
+          namespace: skillpulse-prod
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Service
+          message: service/backend unchanged
+          name: backend
+          namespace: skillpulse-prod
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Service
+          message: service/mysql unchanged
+          name: mysql
+          namespace: skillpulse-prod
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Service
+          message: service/frontend unchanged
+          name: frontend
+          namespace: skillpulse-prod
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apps
+          hookPhase: Running
+          images:
+          - shettymalathi113/skillpulse-frontend:e98b107eb413f249e0df9e149524ea738e66159a
+          kind: Deployment
+          message: deployment.apps/frontend unchanged
+          name: frontend
+          namespace: skillpulse-prod
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apps
+          hookPhase: Running
+          images:
+          - mysql:8
+          kind: StatefulSet
+          message: statefulset.apps/mysql configured
+          name: mysql
+          namespace: skillpulse-prod
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: networking.k8s.io
+          hookPhase: Running
+          kind: Ingress
+          message: ingress.networking.k8s.io/skillpulse-ingress configured
+          name: skillpulse-ingress
+          namespace: skillpulse-prod
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: argoproj.io
+          hookPhase: Running
+          images:
+          - shettymalathi113/skillpulse-backend:e98b107eb413f249e0df9e149524ea738e66159a
+          kind: Rollout
+          message: rollout.argoproj.io/backend configured
+          name: backend
+          namespace: skillpulse-prod
+          status: Synced
+          syncPhase: Sync
+          version: v1alpha1
+        revision: 7b90911462b8ca9641029a51e9b62819707f4eff
+        source:
+          path: k8s/overlays/prod
+          repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+          targetRevision: main
+    reconciledAt: "2026-05-19T19:07:53Z"
+    resourceHealthSource: appTree
+    resources:
+    - kind: ConfigMap
+      name: mysql-init
+      namespace: skillpulse-prod
+      status: Synced
+      version: v1
+    - kind: Namespace
+      name: skillpulse-prod
+      status: Synced
+      version: v1
+    - kind: Secret
+      name: skillpulse-db
+      namespace: skillpulse-prod
+      status: Synced
+      version: v1
+    - kind: Service
+      name: backend
+      namespace: skillpulse-prod
+      status: Synced
+      version: v1
+    - kind: Service
+      name: frontend
+      namespace: skillpulse-prod
+      status: Synced
+      version: v1
+    - kind: Service
+      name: mysql
+      namespace: skillpulse-prod
+      status: Synced
+      version: v1
+    - group: apps
+      kind: Deployment
+      name: frontend
+      namespace: skillpulse-prod
+      status: Synced
+      version: v1
+    - group: apps
+      kind: StatefulSet
+      name: mysql
+      namespace: skillpulse-prod
+      status: Synced
+      version: v1
+    - group: argoproj.io
+      kind: Rollout
+      name: backend
+      namespace: skillpulse-prod
+      status: Synced
+      version: v1alpha1
+    - group: networking.k8s.io
+      kind: Ingress
+      name: skillpulse-ingress
+      namespace: skillpulse-prod
+      status: Synced
+      version: v1
+    sourceHydrator: {}
+    sourceType: Kustomize
+    summary:
+      externalURLs:
+      - http://a44823563bc4f4fff82e35851b120234-f9c273975dead04d.elb.us-west-2.amazonaws.com/
+      - http://a44823563bc4f4fff82e35851b120234-f9c273975dead04d.elb.us-west-2.amazonaws.com/api
+      images:
+      - mysql:8
+      - shettymalathi113/skillpulse-backend:e98b107eb413f249e0df9e149524ea738e66159a
+      - shettymalathi113/skillpulse-frontend:e98b107eb413f249e0df9e149524ea738e66159a
+    sync:
+      comparedTo:
+        destination:
+          namespace: skillpulse-prod
+          server: https://kubernetes.default.svc
+        source:
+          path: k8s/overlays/prod
+          repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+          targetRevision: main
+      revision: 7b90911462b8ca9641029a51e9b62819707f4eff
+      status: Synced
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{},"name":"skillpulse-staging","namespace":"argocd"},"spec":{"destination":{"namespace":"skillpulse-staging","server":"https://kubernetes.default.svc"},"project":"default","source":{"path":"k8s/overlays/staging","repoURL":"https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git","targetRevision":"main"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}
+    creationTimestamp: "2026-05-19T13:24:40Z"
+    generation: 332
+    name: skillpulse-staging
+    namespace: argocd
+    resourceVersion: "318048"
+    uid: 26161d9b-d872-40bf-bc3a-4939486f79d4
+  spec:
+    destination:
+      namespace: skillpulse-staging
+      server: https://kubernetes.default.svc
+    project: default
+    source:
+      path: k8s/overlays/staging
+      repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+      targetRevision: main
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+  status:
+    controllerNamespace: argocd
+    health:
+      lastTransitionTime: "2026-05-19T18:35:56Z"
+      status: Healthy
+    history:
+    - deployStartedAt: "2026-05-19T15:39:34Z"
+      deployedAt: "2026-05-19T15:39:35Z"
+      id: 5
+      initiatedBy:
+        username: admin
+      revision: cb5331bcf10e59077fcce37b8b838726f9c129eb
+      source:
+        path: k8s/overlays/staging
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T15:46:35Z"
+      deployedAt: "2026-05-19T15:46:36Z"
+      id: 6
+      initiatedBy:
+        username: admin
+      revision: cb5331bcf10e59077fcce37b8b838726f9c129eb
+      source:
+        path: k8s/overlays/staging
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T17:26:43Z"
+      deployedAt: "2026-05-19T17:26:44Z"
+      id: 7
+      initiatedBy:
+        username: admin
+      revision: c230111ec93fd775b2182ee9f2d94c39eff83cff
+      source:
+        path: k8s/overlays/staging
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T17:37:26Z"
+      deployedAt: "2026-05-19T17:37:27Z"
+      id: 8
+      initiatedBy:
+        username: admin
+      revision: be76784aaa1ad98e0f809b73d270d121ccfe326f
+      source:
+        path: k8s/overlays/staging
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T17:56:43Z"
+      deployedAt: "2026-05-19T17:56:44Z"
+      id: 9
+      initiatedBy:
+        username: admin
+      revision: ff316d04dbd5850aafce3a4029b45d0fa938e050
+      source:
+        path: k8s/overlays/staging
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:06:02Z"
+      deployedAt: "2026-05-19T18:06:03Z"
+      id: 10
+      initiatedBy:
+        username: admin
+      revision: 7904d288223bbe09b537abe05a68af0563615a64
+      source:
+        path: k8s/overlays/staging
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:07:07Z"
+      deployedAt: "2026-05-19T18:07:08Z"
+      id: 11
+      initiatedBy:
+        username: admin
+      revision: 7904d288223bbe09b537abe05a68af0563615a64
+      source:
+        path: k8s/overlays/staging
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:09:26Z"
+      deployedAt: "2026-05-19T18:09:27Z"
+      id: 12
+      initiatedBy:
+        username: admin
+      revision: 7904d288223bbe09b537abe05a68af0563615a64
+      source:
+        path: k8s/overlays/staging
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:17:45Z"
+      deployedAt: "2026-05-19T18:17:46Z"
+      id: 13
+      initiatedBy:
+        automated: true
+      revision: 72ac746f5c80df573224e5f977cbd4d4326b2fce
+      source:
+        path: k8s/overlays/staging
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    - deployStartedAt: "2026-05-19T18:35:54Z"
+      deployedAt: "2026-05-19T18:35:55Z"
+      id: 14
+      initiatedBy:
+        automated: true
+      revision: 76a5244f876e92395e1481343a0a0864b2970609
+      source:
+        path: k8s/overlays/staging
+        repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+        targetRevision: main
+    operationState:
+      finishedAt: "2026-05-19T18:35:55Z"
+      message: successfully synced (all tasks run)
+      operation:
+        initiatedBy:
+          automated: true
+        retry:
+          limit: 5
+        sync:
+          prune: true
+          revision: 76a5244f876e92395e1481343a0a0864b2970609
+          source:
+            path: k8s/overlays/staging
+            repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+            targetRevision: main
+      phase: Succeeded
+      startedAt: "2026-05-19T18:35:54Z"
+      syncResult:
+        resources:
+        - group: ""
+          hookPhase: Running
+          kind: Namespace
+          message: namespace/skillpulse-staging unchanged
+          name: skillpulse-staging
+          namespace: skillpulse-staging
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Secret
+          message: secret/skillpulse-db configured
+          name: skillpulse-db
+          namespace: skillpulse-staging
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: ConfigMap
+          message: configmap/mysql-init unchanged
+          name: mysql-init
+          namespace: skillpulse-staging
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Service
+          message: service/frontend unchanged
+          name: frontend
+          namespace: skillpulse-staging
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Service
+          message: service/mysql unchanged
+          name: mysql
+          namespace: skillpulse-staging
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Service
+          message: service/backend created
+          name: backend
+          namespace: skillpulse-staging
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apps
+          hookPhase: Running
+          images:
+          - shettymalathi113/skillpulse-frontend:latest
+          kind: Deployment
+          message: deployment.apps/frontend unchanged
+          name: frontend
+          namespace: skillpulse-staging
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apps
+          hookPhase: Running
+          images:
+          - mysql:8
+          kind: StatefulSet
+          message: statefulset.apps/mysql configured
+          name: mysql
+          namespace: skillpulse-staging
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: argoproj.io
+          hookPhase: Running
+          images:
+          - shettymalathi113/skillpulse-backend:latest
+          kind: Rollout
+          message: rollout.argoproj.io/backend configured
+          name: backend
+          namespace: skillpulse-staging
+          status: Synced
+          syncPhase: Sync
+          version: v1alpha1
+        revision: 76a5244f876e92395e1481343a0a0864b2970609
+        source:
+          path: k8s/overlays/staging
+          repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+          targetRevision: main
+    reconciledAt: "2026-05-19T19:10:00Z"
+    resourceHealthSource: appTree
+    resources:
+    - kind: ConfigMap
+      name: mysql-init
+      namespace: skillpulse-staging
+      status: Synced
+      version: v1
+    - kind: Namespace
+      name: skillpulse-staging
+      status: Synced
+      version: v1
+    - kind: Secret
+      name: skillpulse-db
+      namespace: skillpulse-staging
+      status: Synced
+      version: v1
+    - kind: Service
+      name: backend
+      namespace: skillpulse-staging
+      status: Synced
+      version: v1
+    - kind: Service
+      name: frontend
+      namespace: skillpulse-staging
+      status: Synced
+      version: v1
+    - kind: Service
+      name: mysql
+      namespace: skillpulse-staging
+      status: Synced
+      version: v1
+    - group: apps
+      kind: Deployment
+      name: frontend
+      namespace: skillpulse-staging
+      status: Synced
+      version: v1
+    - group: apps
+      kind: StatefulSet
+      name: mysql
+      namespace: skillpulse-staging
+      status: Synced
+      version: v1
+    - group: argoproj.io
+      kind: Rollout
+      name: backend
+      namespace: skillpulse-staging
+      status: Synced
+      version: v1alpha1
+    sourceHydrator: {}
+    sourceType: Kustomize
+    summary:
+      images:
+      - mysql:8
+      - shettymalathi113/skillpulse-backend:latest
+      - shettymalathi113/skillpulse-frontend:latest
+    sync:
+      comparedTo:
+        destination:
+          namespace: skillpulse-staging
+          server: https://kubernetes.default.svc
+        source:
+          path: k8s/overlays/staging
+          repoURL: https://github.com/malathi-shetty/github-actions-kubernetes-masterclass.git
+          targetRevision: main
+      revision: 7b90911462b8ca9641029a51e9b62819707f4eff
+      status: Synced
+kind: List
+metadata:
+  resourceVersion: ""

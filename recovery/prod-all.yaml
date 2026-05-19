@@ -1,0 +1,1403 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2026-05-19T18:30:01Z"
+    generateName: backend-75db585c6-
+    labels:
+      app: backend
+      rollouts-pod-template-hash: 75db585c6
+    name: backend-75db585c6-bd5k5
+    namespace: skillpulse-prod
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: backend-75db585c6
+      uid: 06d37c71-6d46-45ef-85a9-0a9954c74a5a
+    resourceVersion: "307686"
+    uid: 2ef78376-0c2a-4fe8-b61d-6b871c37eb0f
+  spec:
+    containers:
+    - env:
+      - name: DB_HOST
+        value: mysql
+      - name: DB_PORT
+        value: "3306"
+      - name: PORT
+        value: "8080"
+      - name: DB_USER
+        valueFrom:
+          secretKeyRef:
+            key: MYSQL_USER
+            name: skillpulse-db
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: MYSQL_PASSWORD
+            name: skillpulse-db
+      - name: DB_NAME
+        valueFrom:
+          secretKeyRef:
+            key: MYSQL_DATABASE
+            name: skillpulse-db
+      image: shettymalathi113/skillpulse-backend:e98b107eb413f249e0df9e149524ea738e66159a
+      imagePullPolicy: IfNotPresent
+      name: backend
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-5ptzp
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: ip-172-31-7-244.us-west-2.compute.internal
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-5ptzp
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:30:04Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:30:01Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:30:04Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:30:04Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:30:01Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://a09d60998dd409a77a12dd0ef936cb06c57d3e76a1a334f40c17278c552b90cd
+      image: docker.io/shettymalathi113/skillpulse-backend:e98b107eb413f249e0df9e149524ea738e66159a
+      imageID: docker.io/shettymalathi113/skillpulse-backend@sha256:607e7dfc1a9b00fe6bb294adc3eed022c2c37d240fb6a8651bf41815ddc56f0d
+      lastState: {}
+      name: backend
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2026-05-19T18:30:04Z"
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-5ptzp
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 172.31.7.244
+    hostIPs:
+    - ip: 172.31.7.244
+    phase: Running
+    podIP: 172.31.13.193
+    podIPs:
+    - ip: 172.31.13.193
+    qosClass: BestEffort
+    startTime: "2026-05-19T18:30:01Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2026-05-19T18:30:34Z"
+    generateName: backend-75db585c6-
+    labels:
+      app: backend
+      rollouts-pod-template-hash: 75db585c6
+    name: backend-75db585c6-j7d82
+    namespace: skillpulse-prod
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: backend-75db585c6
+      uid: 06d37c71-6d46-45ef-85a9-0a9954c74a5a
+    resourceVersion: "307880"
+    uid: a5e96be5-d034-476b-a9aa-986efdda42a0
+  spec:
+    containers:
+    - env:
+      - name: DB_HOST
+        value: mysql
+      - name: DB_PORT
+        value: "3306"
+      - name: PORT
+        value: "8080"
+      - name: DB_USER
+        valueFrom:
+          secretKeyRef:
+            key: MYSQL_USER
+            name: skillpulse-db
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: MYSQL_PASSWORD
+            name: skillpulse-db
+      - name: DB_NAME
+        valueFrom:
+          secretKeyRef:
+            key: MYSQL_DATABASE
+            name: skillpulse-db
+      image: shettymalathi113/skillpulse-backend:e98b107eb413f249e0df9e149524ea738e66159a
+      imagePullPolicy: IfNotPresent
+      name: backend
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-9sk9l
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: ip-172-31-43-244.us-west-2.compute.internal
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-9sk9l
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:30:37Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:30:34Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:30:37Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:30:37Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:30:34Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://ea6297395257c1ba27b04c1d4b7f62c705d58f8d11abe2aa52388b9b23e6482e
+      image: docker.io/shettymalathi113/skillpulse-backend:e98b107eb413f249e0df9e149524ea738e66159a
+      imageID: docker.io/shettymalathi113/skillpulse-backend@sha256:607e7dfc1a9b00fe6bb294adc3eed022c2c37d240fb6a8651bf41815ddc56f0d
+      lastState: {}
+      name: backend
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2026-05-19T18:30:36Z"
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-9sk9l
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 172.31.43.244
+    hostIPs:
+    - ip: 172.31.43.244
+    phase: Running
+    podIP: 172.31.44.6
+    podIPs:
+    - ip: 172.31.44.6
+    qosClass: BestEffort
+    startTime: "2026-05-19T18:30:34Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2026-05-19T18:31:07Z"
+    generateName: backend-75db585c6-
+    labels:
+      app: backend
+      rollouts-pod-template-hash: 75db585c6
+    name: backend-75db585c6-pw5lq
+    namespace: skillpulse-prod
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: backend-75db585c6
+      uid: 06d37c71-6d46-45ef-85a9-0a9954c74a5a
+    resourceVersion: "308054"
+    uid: 6cc0c74c-8df7-488c-be87-5dc2fafc6b4c
+  spec:
+    containers:
+    - env:
+      - name: DB_HOST
+        value: mysql
+      - name: DB_PORT
+        value: "3306"
+      - name: PORT
+        value: "8080"
+      - name: DB_USER
+        valueFrom:
+          secretKeyRef:
+            key: MYSQL_USER
+            name: skillpulse-db
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: MYSQL_PASSWORD
+            name: skillpulse-db
+      - name: DB_NAME
+        valueFrom:
+          secretKeyRef:
+            key: MYSQL_DATABASE
+            name: skillpulse-db
+      image: shettymalathi113/skillpulse-backend:e98b107eb413f249e0df9e149524ea738e66159a
+      imagePullPolicy: IfNotPresent
+      name: backend
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-glk8b
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: ip-172-31-7-244.us-west-2.compute.internal
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-glk8b
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:31:08Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:31:07Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:31:08Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:31:08Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:31:07Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://bc78954d49acb18826ef692bb5958bbe7b69ab5e47f56ea2df055c1643156523
+      image: docker.io/shettymalathi113/skillpulse-backend:e98b107eb413f249e0df9e149524ea738e66159a
+      imageID: docker.io/shettymalathi113/skillpulse-backend@sha256:607e7dfc1a9b00fe6bb294adc3eed022c2c37d240fb6a8651bf41815ddc56f0d
+      lastState: {}
+      name: backend
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2026-05-19T18:31:07Z"
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-glk8b
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 172.31.7.244
+    hostIPs:
+    - ip: 172.31.7.244
+    phase: Running
+    podIP: 172.31.8.138
+    podIPs:
+    - ip: 172.31.8.138
+    qosClass: BestEffort
+    startTime: "2026-05-19T18:31:07Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/restartedAt: "2026-05-19T17:37:47Z"
+    creationTimestamp: "2026-05-19T18:30:01Z"
+    generateName: frontend-7dc6b75c94-
+    labels:
+      app: frontend
+      pod-template-hash: 7dc6b75c94
+    name: frontend-7dc6b75c94-qtlwf
+    namespace: skillpulse-prod
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: frontend-7dc6b75c94
+      uid: d53e0c9c-a11f-493d-9983-c34ce3eeb497
+    resourceVersion: "309213"
+    uid: 3920fbdf-bb6c-4f27-9ee8-1b03bff90591
+  spec:
+    containers:
+    - image: shettymalathi113/skillpulse-frontend:e98b107eb413f249e0df9e149524ea738e66159a
+      imagePullPolicy: IfNotPresent
+      name: frontend
+      ports:
+      - containerPort: 80
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-nljbp
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: ip-172-31-7-244.us-west-2.compute.internal
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-nljbp
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:30:03Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:30:01Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:35:41Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:35:41Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:30:01Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://ee759248fcbbdfc17496427881b60b83ef24a52fceb42ced604b255596a47816
+      image: docker.io/shettymalathi113/skillpulse-frontend:e98b107eb413f249e0df9e149524ea738e66159a
+      imageID: docker.io/shettymalathi113/skillpulse-frontend@sha256:80e67ede14768f6555249cf8999f13eb601ae4f6b943a7506ac0a6952bddb1fa
+      lastState:
+        terminated:
+          containerID: containerd://9d3702b4bfe2135dc1f2eca6f1cc0e380d75b97d4a88edd4587a89ff6eb956f9
+          exitCode: 1
+          finishedAt: "2026-05-19T18:32:49Z"
+          reason: Error
+          startedAt: "2026-05-19T18:32:49Z"
+      name: frontend
+      ready: true
+      restartCount: 6
+      started: true
+      state:
+        running:
+          startedAt: "2026-05-19T18:35:41Z"
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-nljbp
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 172.31.7.244
+    hostIPs:
+    - ip: 172.31.7.244
+    phase: Running
+    podIP: 172.31.7.233
+    podIPs:
+    - ip: 172.31.7.233
+    qosClass: BestEffort
+    startTime: "2026-05-19T18:30:01Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2026-05-19T18:10:20Z"
+    generateName: mysql-
+    labels:
+      app: mysql
+      apps.kubernetes.io/pod-index: "0"
+      controller-revision-hash: mysql-79867949d8
+      statefulset.kubernetes.io/pod-name: mysql-0
+    name: mysql-0
+    namespace: skillpulse-prod
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: StatefulSet
+      name: mysql
+      uid: 44ae3c15-4ccb-4cf5-8311-32b0074c5fb1
+    resourceVersion: "302953"
+    uid: 2db438e7-7662-4758-88b3-0595c7b05aee
+  spec:
+    containers:
+    - envFrom:
+      - secretRef:
+          name: skillpulse-db
+      image: mysql:8
+      imagePullPolicy: IfNotPresent
+      name: mysql
+      ports:
+      - containerPort: 3306
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/lib/mysql
+        name: mysql-storage
+      - mountPath: /docker-entrypoint-initdb.d
+        name: init-script
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-cs9dv
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostname: mysql-0
+    nodeName: ip-172-31-43-244.us-west-2.compute.internal
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    subdomain: mysql
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: mysql-storage
+      persistentVolumeClaim:
+        claimName: mysql-storage-mysql-0
+    - configMap:
+        defaultMode: 420
+        name: mysql-init
+      name: init-script
+    - name: kube-api-access-cs9dv
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:10:24Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:10:20Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:10:24Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:10:24Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-19T18:10:20Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://be639c16962513d4ad2ba49f70a5ae8bdade18608c87bf89e8388d446a75cd17
+      image: docker.io/library/mysql:8
+      imageID: docker.io/library/mysql@sha256:c36050afdca850f23cef85703f84c7531a5ae155a11b5ee1c60acb09937c4084
+      lastState: {}
+      name: mysql
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2026-05-19T18:10:24Z"
+      volumeMounts:
+      - mountPath: /var/lib/mysql
+        name: mysql-storage
+      - mountPath: /docker-entrypoint-initdb.d
+        name: init-script
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-cs9dv
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 172.31.43.244
+    hostIPs:
+    - ip: 172.31.43.244
+    phase: Running
+    podIP: 172.31.33.109
+    podIPs:
+    - ip: 172.31.33.109
+    qosClass: BestEffort
+    startTime: "2026-05-19T18:10:20Z"
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      argocd.argoproj.io/tracking-id: skillpulse-prod:/Service:skillpulse-prod/backend
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{"argocd.argoproj.io/tracking-id":"skillpulse-prod:/Service:skillpulse-prod/backend"},"labels":{"env":"prod"},"name":"backend","namespace":"skillpulse-prod"},"spec":{"ports":[{"port":8080,"targetPort":8080}],"selector":{"app":"backend"}}}
+    creationTimestamp: "2026-05-19T18:34:36Z"
+    labels:
+      env: prod
+    name: backend
+    namespace: skillpulse-prod
+    resourceVersion: "308935"
+    uid: ef6118d2-5f2c-456b-b142-d7d8aed9ec44
+  spec:
+    clusterIP: 10.100.223.154
+    clusterIPs:
+    - 10.100.223.154
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: backend
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      argocd.argoproj.io/tracking-id: skillpulse-prod:/Service:skillpulse-prod/frontend
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{"argocd.argoproj.io/tracking-id":"skillpulse-prod:/Service:skillpulse-prod/frontend"},"labels":{"env":"prod"},"name":"frontend","namespace":"skillpulse-prod"},"spec":{"ports":[{"port":80,"targetPort":80}],"selector":{"app":"frontend"},"type":"ClusterIP"}}
+    creationTimestamp: "2026-05-19T15:46:41Z"
+    labels:
+      env: prod
+    name: frontend
+    namespace: skillpulse-prod
+    resourceVersion: "290942"
+    uid: 7c00e6ba-3259-46ba-8fe9-acefa05e6618
+  spec:
+    clusterIP: 10.100.124.183
+    clusterIPs:
+    - 10.100.124.183
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+    selector:
+      app: frontend
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      argocd.argoproj.io/tracking-id: skillpulse-prod:/Service:skillpulse-prod/mysql
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{"argocd.argoproj.io/tracking-id":"skillpulse-prod:/Service:skillpulse-prod/mysql"},"labels":{"env":"prod"},"name":"mysql","namespace":"skillpulse-prod"},"spec":{"clusterIP":"None","ports":[{"port":3306,"targetPort":3306}],"selector":{"app":"mysql"}}}
+    creationTimestamp: "2026-05-19T15:38:16Z"
+    labels:
+      env: prod
+    name: mysql
+    namespace: skillpulse-prod
+    resourceVersion: "290945"
+    uid: 76962fef-c04a-4aa7-b9ca-2a46aacd5b63
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 3306
+      protocol: TCP
+      targetPort: 3306
+    selector:
+      app: mysql
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      argocd.argoproj.io/tracking-id: skillpulse-prod:apps/Deployment:skillpulse-prod/frontend
+      deployment.kubernetes.io/revision: "5"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{"argocd.argoproj.io/tracking-id":"skillpulse-prod:apps/Deployment:skillpulse-prod/frontend"},"labels":{"env":"prod"},"name":"frontend","namespace":"skillpulse-prod"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"frontend"}},"template":{"metadata":{"labels":{"app":"frontend"}},"spec":{"containers":[{"image":"shettymalathi113/skillpulse-frontend:e98b107eb413f249e0df9e149524ea738e66159a","name":"frontend","ports":[{"containerPort":80}]}]}}}}
+    creationTimestamp: "2026-05-19T17:21:36Z"
+    generation: 5
+    labels:
+      env: prod
+    name: frontend
+    namespace: skillpulse-prod
+    resourceVersion: "309227"
+    uid: b4d06197-2520-402a-aec7-5e51e46afadb
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: frontend
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-05-19T17:37:47Z"
+        creationTimestamp: null
+        labels:
+          app: frontend
+      spec:
+        containers:
+        - image: shettymalathi113/skillpulse-frontend:e98b107eb413f249e0df9e149524ea738e66159a
+          imagePullPolicy: IfNotPresent
+          name: frontend
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-05-19T17:21:38Z"
+      lastUpdateTime: "2026-05-19T17:21:38Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2026-05-19T17:21:36Z"
+      lastUpdateTime: "2026-05-19T18:35:41Z"
+      message: ReplicaSet "frontend-7dc6b75c94" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 5
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      argocd.argoproj.io/tracking-id: skillpulse-prod:argoproj.io/Rollout:skillpulse-prod/backend
+      rollout.argoproj.io/desired-replicas: "3"
+      rollout.argoproj.io/revision: "1"
+    creationTimestamp: "2026-05-19T18:22:42Z"
+    generation: 5
+    labels:
+      app: backend
+      rollouts-pod-template-hash: 55f6458fd4
+    name: backend-55f6458fd4
+    namespace: skillpulse-prod
+    ownerReferences:
+    - apiVersion: argoproj.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Rollout
+      name: backend
+      uid: f70b5e5f-af05-4cf0-9f5b-b9f4e9fe5ee3
+    resourceVersion: "308067"
+    uid: 4f3cad7c-5c40-41bc-a4d2-a17c237d3dc6
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: backend
+        rollouts-pod-template-hash: 55f6458fd4
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: backend
+          rollouts-pod-template-hash: 55f6458fd4
+      spec:
+        containers:
+        - env:
+          - name: DB_HOST
+            value: mysql
+          - name: DB_PORT
+            value: "3306"
+          - name: PORT
+            value: "8080"
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                key: MYSQL_USER
+                name: skillpulse-db
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: MYSQL_PASSWORD
+                name: skillpulse-db
+          - name: DB_NAME
+            valueFrom:
+              secretKeyRef:
+                key: MYSQL_DATABASE
+                name: skillpulse-db
+          image: shettymalathi113/skillpulse-backend:latest
+          imagePullPolicy: Always
+          name: backend
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 5
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      argocd.argoproj.io/tracking-id: skillpulse-prod:argoproj.io/Rollout:skillpulse-prod/backend
+      rollout.argoproj.io/desired-replicas: "3"
+      rollout.argoproj.io/revision: "2"
+    creationTimestamp: "2026-05-19T18:30:01Z"
+    generation: 4
+    labels:
+      app: backend
+      rollouts-pod-template-hash: 75db585c6
+    name: backend-75db585c6
+    namespace: skillpulse-prod
+    ownerReferences:
+    - apiVersion: argoproj.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Rollout
+      name: backend
+      uid: f70b5e5f-af05-4cf0-9f5b-b9f4e9fe5ee3
+    resourceVersion: "308057"
+    uid: 06d37c71-6d46-45ef-85a9-0a9954c74a5a
+  spec:
+    replicas: 3
+    selector:
+      matchLabels:
+        app: backend
+        rollouts-pod-template-hash: 75db585c6
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: backend
+          rollouts-pod-template-hash: 75db585c6
+      spec:
+        containers:
+        - env:
+          - name: DB_HOST
+            value: mysql
+          - name: DB_PORT
+            value: "3306"
+          - name: PORT
+            value: "8080"
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                key: MYSQL_USER
+                name: skillpulse-db
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: MYSQL_PASSWORD
+                name: skillpulse-db
+          - name: DB_NAME
+            valueFrom:
+              secretKeyRef:
+                key: MYSQL_DATABASE
+                name: skillpulse-db
+          image: shettymalathi113/skillpulse-backend:e98b107eb413f249e0df9e149524ea738e66159a
+          imagePullPolicy: IfNotPresent
+          name: backend
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 3
+    fullyLabeledReplicas: 3
+    observedGeneration: 4
+    readyReplicas: 3
+    replicas: 3
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      argocd.argoproj.io/tracking-id: skillpulse-prod:apps/Deployment:skillpulse-prod/frontend
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "4"
+    creationTimestamp: "2026-05-19T17:37:47Z"
+    generation: 2
+    labels:
+      app: frontend
+      pod-template-hash: 56dfb8f57d
+    name: frontend-56dfb8f57d
+    namespace: skillpulse-prod
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: frontend
+      uid: b4d06197-2520-402a-aec7-5e51e46afadb
+    resourceVersion: "309226"
+    uid: ebdcc73c-60ee-4df1-8aae-35c8d977ac8d
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: frontend
+        pod-template-hash: 56dfb8f57d
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-05-19T17:37:47Z"
+        creationTimestamp: null
+        labels:
+          app: frontend
+          pod-template-hash: 56dfb8f57d
+      spec:
+        containers:
+        - image: shettymalathi113/skillpulse-frontend:latest
+          imagePullPolicy: IfNotPresent
+          name: frontend
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      argocd.argoproj.io/tracking-id: skillpulse-prod:apps/Deployment:skillpulse-prod/frontend
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2026-05-19T17:21:36Z"
+    generation: 2
+    labels:
+      app: frontend
+      pod-template-hash: 67f8c6ff87
+    name: frontend-67f8c6ff87
+    namespace: skillpulse-prod
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: frontend
+      uid: b4d06197-2520-402a-aec7-5e51e46afadb
+    resourceVersion: "291982"
+    uid: e97a9330-80fd-4543-859b-236b46d1d545
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: frontend
+        pod-template-hash: 67f8c6ff87
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: frontend
+          pod-template-hash: 67f8c6ff87
+      spec:
+        containers:
+        - image: shettymalathi113/skillpulse-frontend:e98b107eb413f249e0df9e149524ea738e66159a
+          imagePullPolicy: IfNotPresent
+          name: frontend
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      argocd.argoproj.io/tracking-id: skillpulse-prod:apps/Deployment:skillpulse-prod/frontend
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "3"
+    creationTimestamp: "2026-05-19T17:37:37Z"
+    generation: 2
+    labels:
+      app: frontend
+      pod-template-hash: 6db74dfc6f
+    name: frontend-6db74dfc6f
+    namespace: skillpulse-prod
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: frontend
+      uid: b4d06197-2520-402a-aec7-5e51e46afadb
+    resourceVersion: "295169"
+    uid: 4704965a-97c0-4977-bbde-b087600822c5
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: frontend
+        pod-template-hash: 6db74dfc6f
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-05-19T17:25:23Z"
+        creationTimestamp: null
+        labels:
+          app: frontend
+          pod-template-hash: 6db74dfc6f
+      spec:
+        containers:
+        - image: shettymalathi113/skillpulse-frontend:latest
+          imagePullPolicy: IfNotPresent
+          name: frontend
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      argocd.argoproj.io/tracking-id: skillpulse-prod:apps/Deployment:skillpulse-prod/frontend
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "5"
+    creationTimestamp: "2026-05-19T18:30:01Z"
+    generation: 1
+    labels:
+      app: frontend
+      pod-template-hash: 7dc6b75c94
+    name: frontend-7dc6b75c94
+    namespace: skillpulse-prod
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: frontend
+      uid: b4d06197-2520-402a-aec7-5e51e46afadb
+    resourceVersion: "309216"
+    uid: d53e0c9c-a11f-493d-9983-c34ce3eeb497
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: frontend
+        pod-template-hash: 7dc6b75c94
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-05-19T17:37:47Z"
+        creationTimestamp: null
+        labels:
+          app: frontend
+          pod-template-hash: 7dc6b75c94
+      spec:
+        containers:
+        - image: shettymalathi113/skillpulse-frontend:e98b107eb413f249e0df9e149524ea738e66159a
+          imagePullPolicy: IfNotPresent
+          name: frontend
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      argocd.argoproj.io/tracking-id: skillpulse-prod:apps/Deployment:skillpulse-prod/frontend
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "2"
+    creationTimestamp: "2026-05-19T17:25:23Z"
+    generation: 2
+    labels:
+      app: frontend
+      pod-template-hash: fc5dbf949
+    name: frontend-fc5dbf949
+    namespace: skillpulse-prod
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: frontend
+      uid: b4d06197-2520-402a-aec7-5e51e46afadb
+    resourceVersion: "295030"
+    uid: d47d8111-5e64-4184-be97-ce9dd9a2976c
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: frontend
+        pod-template-hash: fc5dbf949
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-05-19T17:25:23Z"
+        creationTimestamp: null
+        labels:
+          app: frontend
+          pod-template-hash: fc5dbf949
+      spec:
+        containers:
+        - image: shettymalathi113/skillpulse-frontend:e98b107eb413f249e0df9e149524ea738e66159a
+          imagePullPolicy: IfNotPresent
+          name: frontend
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    annotations:
+      argocd.argoproj.io/tracking-id: skillpulse-prod:apps/StatefulSet:skillpulse-prod/mysql
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"StatefulSet","metadata":{"annotations":{"argocd.argoproj.io/tracking-id":"skillpulse-prod:apps/StatefulSet:skillpulse-prod/mysql"},"labels":{"env":"prod"},"name":"mysql","namespace":"skillpulse-prod"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"mysql"}},"serviceName":"mysql","template":{"metadata":{"labels":{"app":"mysql"}},"spec":{"containers":[{"envFrom":[{"secretRef":{"name":"skillpulse-db"}}],"image":"mysql:8","name":"mysql","ports":[{"containerPort":3306}],"volumeMounts":[{"mountPath":"/var/lib/mysql","name":"mysql-storage"},{"mountPath":"/docker-entrypoint-initdb.d","name":"init-script"}]}],"volumes":[{"configMap":{"name":"mysql-init"},"name":"init-script"}]}},"volumeClaimTemplates":[{"metadata":{"name":"mysql-storage"},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"5Gi"}},"storageClassName":"gp2"}}]}}
+    creationTimestamp: "2026-05-19T17:26:50Z"
+    generation: 2
+    labels:
+      env: prod
+    name: mysql
+    namespace: skillpulse-prod
+    resourceVersion: "302956"
+    uid: 44ae3c15-4ccb-4cf5-8311-32b0074c5fb1
+  spec:
+    persistentVolumeClaimRetentionPolicy:
+      whenDeleted: Retain
+      whenScaled: Retain
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: mysql
+    serviceName: mysql
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: mysql
+      spec:
+        containers:
+        - envFrom:
+          - secretRef:
+              name: skillpulse-db
+          image: mysql:8
+          imagePullPolicy: IfNotPresent
+          name: mysql
+          ports:
+          - containerPort: 3306
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: mysql-storage
+          - mountPath: /docker-entrypoint-initdb.d
+            name: init-script
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: mysql-init
+          name: init-script
+    updateStrategy:
+      rollingUpdate:
+        partition: 0
+      type: RollingUpdate
+    volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        creationTimestamp: null
+        name: mysql-storage
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+        storageClassName: gp2
+        volumeMode: Filesystem
+      status:
+        phase: Pending
+  status:
+    availableReplicas: 1
+    collisionCount: 0
+    currentReplicas: 1
+    currentRevision: mysql-79867949d8
+    observedGeneration: 2
+    readyReplicas: 1
+    replicas: 1
+    updateRevision: mysql-79867949d8
+    updatedReplicas: 1
+kind: List
+metadata:
+  resourceVersion: ""
