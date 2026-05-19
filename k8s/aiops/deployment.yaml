@@ -30,4 +30,4 @@ spec:
   type: LoadBalancer
   ports:
     - port: 8090
-      targetPort: 8090
+      targetPort: 80
