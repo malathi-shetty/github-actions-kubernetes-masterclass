@@ -6,12 +6,14 @@ metadata:
 
 spec:
   clusterIP: None
+
   selector:
     app: mysql
 
   ports:
     - port: 3306
       targetPort: 3306
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -51,14 +53,21 @@ spec:
             - name: init-script
               mountPath: /docker-entrypoint-initdb.d
 
+      volumes:
+        - name: init-script
+          configMap:
+            name: mysql-init
+
   volumeClaimTemplates:
     - metadata:
         name: mysql-storage
+
       spec:
-        accessModes: ["ReadWriteOnce"]
+        accessModes:
+          - ReadWriteOnce
 
         resources:
           requests:
             storage: 5Gi
 
-        storageClassName: gp2   # change if needed (EKS default)
+        storageClassName: gp2
