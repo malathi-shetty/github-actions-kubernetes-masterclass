@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
   name: backend
-  namespace: skillpulse-prod   # IMPORTANT FIX
+  namespace: skillpulse   # IMPORTANT FIX
 spec:
   replicas: 3
 
