@@ -3,11 +3,21 @@ kind: Kustomization
 
 namespace: skillpulse-staging
 
-commonLabels:
-  env: staging
+labels:
+  - pairs:
+      env: staging
 
 resources:
   - ../../base
+
+images:
+  - name: skillpulse-backend
+    newName: shettymalathi113/skillpulse-backend
+    newTag: latest
+
+  - name: skillpulse-frontend
+    newName: shettymalathi113/skillpulse-frontend
+    newTag: latest
 
 patches:
   - target:
