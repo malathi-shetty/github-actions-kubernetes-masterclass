@@ -4,13 +4,20 @@ kind: Kustomization
 namespace: skillpulse-dev
 
 resources:
-  - ../../base
+- ../../base
 
 patches:
-  - target:
-      kind: Deployment
-      name: backend
-    patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 1
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 1
+  target:
+    kind: Deployment
+    name: backend
+images:
+- name: skillpulse-backend
+  newName: shettymalathi113/skillpulse-backend
+  newTag: ab5ad4c0fc3c4d85dabb011fa05b0a59fd5b6150
+- name: skillpulse-frontend
+  newName: shettymalathi113/skillpulse-frontend
+  newTag: ab5ad4c0fc3c4d85dabb011fa05b0a59fd5b6150
