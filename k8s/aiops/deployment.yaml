@@ -1,4 +1,3 @@
-# k8s/aiops/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,6 +19,7 @@ spec:
         image: your-docker-image:latest
         ports:
         - containerPort: 8090
+---
 apiVersion: v1
 kind: Service
 metadata:
