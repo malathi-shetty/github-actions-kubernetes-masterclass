@@ -9,7 +9,7 @@ module "eks" {
   cluster_name    = "skillpulse-cluster"
   cluster_version = "1.29"
 
-  vpc_id     = "vpc-05ca9cbf89bb468e0"
+  vpc_id = "vpc-05ca9cbf89bb468e0"
 
   subnet_ids = [
     "subnet-02a82aee776e54c08",
@@ -31,19 +31,4 @@ module "eks" {
       instance_types = ["t3.xlarge"]
     }
   }
-
-resource "aws_eks_node_group" "skillpulse" {
-  cluster_name    = aws_eks_cluster.skillpulse.name
-  node_group_name = "skillpulse-ng"
-  node_role_arn   = aws_iam_role.node_role.arn
-  subnet_ids      = var.subnet_ids
-
-  instance_types = ["t3.xlarge"]
-
-  scaling_config {
-    desired_size = 2
-    min_size     = 1
-    max_size     = 3
-  }
-}
 }
