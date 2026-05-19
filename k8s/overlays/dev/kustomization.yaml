@@ -3,8 +3,9 @@ kind: Kustomization
 
 namespace: skillpulse-dev
 
-commonLabels:
-  env: dev
+labels:
+  - pairs:
+      env: dev
 
 resources:
   - ../../base
@@ -12,11 +13,11 @@ resources:
 images:
   - name: skillpulse-backend
     newName: shettymalathi113/skillpulse-backend
-    newTag: ab5ad4c0fc3c4d85dabb011fa05b0a59fd5b6150
+    newTag: latest
 
   - name: skillpulse-frontend
     newName: shettymalathi113/skillpulse-frontend
-    newTag: ab5ad4c0fc3c4d85dabb011fa05b0a59fd5b6150
+    newTag: latest
 
 patches:
   - target:
