@@ -109,3 +109,4 @@ crash.log
 crash.*.log
 recovery/kubeconfig-backup
 recovery/secrets.yaml
+recovery/kubeconfig-backup
