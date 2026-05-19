@@ -20,8 +20,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
 
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v4
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
 
       - name: Update kubeconfig
         run: |
@@ -29,6 +32,6 @@ jobs:
             --region us-west-2 \
             --name ${{ secrets.EKS_CLUSTER }}
 
-      - name: Deploy
+      - name: Deploy to EKS
         run: |
           kubectl apply -k k8s/overlays/dev
