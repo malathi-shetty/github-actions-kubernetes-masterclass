@@ -8,3 +8,4 @@ resources:
   - backend-rollout.yaml
   - secret.yaml
   - mysql-init-configmap.yaml
+  - backend-service.yaml
