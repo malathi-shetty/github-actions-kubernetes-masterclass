@@ -1,120 +1,83 @@
 # =========================================
-# FRONTEND DEPLOYMENT
+# FRONTEND DEPLOYMENT (KEEP)
 # =========================================
-
 apiVersion: apps/v1
 kind: Deployment
-
 metadata:
   name: frontend
-  namespace: skillpulse
-
+  namespace: skillpulse-prod
 spec:
   replicas: 1
-
   selector:
     matchLabels:
       app: frontend
-
   template:
     metadata:
       labels:
         app: frontend
-
     spec:
       containers:
         - name: frontend
           image: shettymalathi113/skillpulse-frontend:latest
-          imagePullPolicy: Always
-
           ports:
             - containerPort: 80
 
 ---
-# =========================================
-# FRONTEND LOADBALANCER SERVICE
-# =========================================
-
+# FRONTEND SERVICE (KEEP - ClusterIP ONLY)
 apiVersion: v1
 kind: Service
-
 metadata:
-  name: frontend-ui
-  namespace: skillpulse
-
+  name: frontend
+  namespace: skillpulse-prod
 spec:
-  type: LoadBalancer
-
+  type: ClusterIP
   selector:
     app: frontend
-
   ports:
-    - port: 8888
+    - port: 80
       targetPort: 80
 
 ---
 # =========================================
-# BACKEND DEPLOYMENT
+# BACKEND DEPLOYMENT (KEEP)
 # =========================================
-
 apiVersion: apps/v1
 kind: Deployment
-
 metadata:
   name: backend
   namespace: skillpulse-prod
-
 spec:
   replicas: 3
-
-  strategy:
-    type: RollingUpdate
-
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
-
   selector:
     matchLabels:
       app: backend
-
   template:
     metadata:
       labels:
         app: backend
-
     spec:
       containers:
         - name: backend
-
           image: shettymalathi113/skillpulse-backend:latest
-          imagePullPolicy: Always
-
           ports:
             - containerPort: 8080
-
           env:
             - name: DB_HOST
-              value: mysql.skillpulse-prod.svc.cluster.local
-
+              value: mysql
             - name: DB_PORT
               value: "3306"
-
             - name: PORT
               value: "8080"
-
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
                   name: skillpulse-db
                   key: MYSQL_USER
-
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: skillpulse-db
                   key: MYSQL_PASSWORD
-
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:
@@ -122,108 +85,16 @@ spec:
                   key: MYSQL_DATABASE
 
 ---
-# =========================================
-# BACKEND SERVICE
-# =========================================
-
+# BACKEND SERVICE (KEEP - ClusterIP ONLY)
 apiVersion: v1
 kind: Service
-
 metadata:
   name: backend
   namespace: skillpulse-prod
-
 spec:
   type: ClusterIP
-
   selector:
     app: backend
-
   ports:
     - port: 8080
-      targetPort: 8080
-
----
-# =========================================
-# GRAFANA SERVICE
-# =========================================
-
-apiVersion: v1
-kind: Service
-
-metadata:
-  name: grafana
-
-spec:
-  type: LoadBalancer
-
-  selector:
-    app: grafana
-
-  ports:
-    - port: 8080
-      targetPort: 3000
-
----
-# =========================================
-# PROMETHEUS SERVICE
-# =========================================
-
-apiVersion: v1
-kind: Service
-
-metadata:
-  name: prometheus
-
-spec:
-  type: LoadBalancer
-
-  selector:
-    app: prometheus
-
-  ports:
-    - port: 9090
-      targetPort: 9090
-
----
-# =========================================
-# AIOPS SERVICE
-# =========================================
-
-apiVersion: v1
-kind: Service
-
-metadata:
-  name: aiops-ui
-
-spec:
-  type: LoadBalancer
-
-  selector:
-    app: aiops
-
-  ports:
-    - port: 8090
-      targetPort: 8090
-
----
-# =========================================
-# ARGOCD SERVICE
-# =========================================
-
-apiVersion: v1
-kind: Service
-
-metadata:
-  name: argocd-server
-  namespace: argocd
-
-spec:
-  type: LoadBalancer
-
-  selector:
-    app.kubernetes.io/name: argocd-server
-
-  ports:
-    - port: 8081
       targetPort: 8080
