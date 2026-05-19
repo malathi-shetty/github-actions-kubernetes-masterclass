@@ -24,7 +24,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Backend
+      - name: Build & Push Backend
         run: |
           docker build -t backend:${{ github.sha }} ./backend
           docker tag backend:${{ github.sha }} $IMAGE_BACKEND:${{ github.sha }}
@@ -44,16 +44,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Frontend
+      - name: Build & Push Frontend
         run: |
           docker build -t frontend:${{ github.sha }} ./frontend
           docker tag frontend:${{ github.sha }} $IMAGE_FRONTEND:${{ github.sha }}
           docker push $IMAGE_FRONTEND:${{ github.sha }}
 
 # =========================================================
-# UPDATE GITOPS REPO
+# UPDATE GITOPS (FIXED)
 # =========================================================
-  update-gitops:
+  gitops:
     runs-on: ubuntu-latest
     needs: [build-backend, build-frontend]
 
@@ -61,7 +61,7 @@ jobs:
       - name: Checkout GitOps Repo
         uses: actions/checkout@v4
         with:
-          repository: malathi-shetty/skillpulse-gitops
+          repository: malathi-shetty/github-actions-kubernetes-masterclass
           token: ${{ secrets.GITOPS_TOKEN }}
 
       - name: Update Backend Image
@@ -72,11 +72,10 @@ jobs:
         run: |
           sed -i "s|image: .*skillpulse-frontend.*|image: $IMAGE_FRONTEND:${{ github.sha }}|g" k8s/overlays/dev/frontend.yaml
 
-      - name: Commit & Push Changes
+      - name: Commit & Push
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-
           git add .
-          git commit -m "update images ${{ github.sha }}" || echo "No changes"
+          git commit -m "update images ${{ github.sha }}" || echo "no changes"
           git push
