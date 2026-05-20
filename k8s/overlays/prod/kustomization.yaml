@@ -24,10 +24,10 @@ patches:
 images:
 - name: backend
   newName: shettymalathi113/skillpulse-backend
-  newTag: fd8c5bd9802a8fb7c22cc32300431258a4b63667
+  newTag: 204bf0463e94f189365d4606c245d2c1e6fd7c5a
 - name: frontend
   newName: shettymalathi113/skillpulse-frontend
-  newTag: fd8c5bd9802a8fb7c22cc32300431258a4b63667
+  newTag: 204bf0463e94f189365d4606c245d2c1e6fd7c5a
 - name: shettymalathi113/skillpulse-backend
   newName: shettymalathi113/skillpulse-backend
   newTag: e98b107eb413f249e0df9e149524ea738e66159a
