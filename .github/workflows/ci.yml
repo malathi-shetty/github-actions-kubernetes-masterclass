@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+  
 env:
   IMAGE_BACKEND: ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-backend
   IMAGE_FRONTEND: ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-frontend
@@ -246,16 +250,21 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
+          git fetch origin main
+          git reset --hard origin/main
+
+          cd k8s/overlays/prod
+
+          kustomize edit set image backend=$IMAGE_BACKEND:${{ github.sha }}
+          kustomize edit set image frontend=$IMAGE_FRONTEND:${{ github.sha }}
+          cd ../../..
           git add .
 
           git commit -m "🚀 release $GITHUB_SHA - prod deploy" || echo "No changes"
 
-          for i in 1 2 3; do
-            git pull --rebase origin main && break
-            sleep 5
-          done
+          git pull --rebase origin main || true
 
-          git push origin main
+          git push origin HEAD:main
 
 # =========================================================
 # 8. DEPLOY DASHBOARD
