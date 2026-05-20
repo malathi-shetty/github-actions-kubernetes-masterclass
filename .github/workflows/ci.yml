@@ -342,7 +342,7 @@ jobs:
 
           git add .
 
-          git commit -m "🚀 release $GITHUB_SHA - prod deploy" || echo "No changes"
+          git commit -m "🚀 release $GITHUB_SHA - prod deploy [skip ci]" || echo "No changes"
 
           git push origin HEAD:main
 
