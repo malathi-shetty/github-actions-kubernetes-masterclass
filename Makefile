@@ -148,6 +148,13 @@ cluster-info:
 clean-k8s:
 	kind delete cluster --name $(CLUSTER)
 
+up:
+	kind create cluster --config k8s/kind-config.yaml
+	kubectl apply -k k8s/overlays/dev
+
+down:
+	kind delete cluster
+
 # =========================================
 # DOCKER BUILD
 # =========================================
