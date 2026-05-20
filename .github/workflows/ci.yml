@@ -1,7 +1,10 @@
+
 name: CI
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 env:
   IMAGE_BACKEND: ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-backend
@@ -12,16 +15,16 @@ permissions:
 
 jobs:
 
-# =========================
-# 1. SECURITY GATE (FAIL FAST)
-# =========================
+# =========================================
+# 1. SECURITY GATE
+# =========================================
   security:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      # ---- Trivy (container + FS scan) ----
+      # Trivy Scan
       - name: Trivy Filesystem Scan
         uses: aquasecurity/trivy-action@master
         with:
@@ -29,7 +32,7 @@ jobs:
           severity: CRITICAL,HIGH
           exit-code: 0
 
-      # ---- Gitleaks (secret detection) ----
+      # Gitleaks Secret Scan
       - name: Gitleaks Scan
         run: |
           docker run --rm \
@@ -41,9 +44,9 @@ jobs:
             --redact \
             --verbose
 
-# =========================
-# 2. BUILD + DOCKER PUSH
-# =========================
+# =========================================
+# 2. BUILD & PUSH DOCKER IMAGES
+# =========================================
   build:
     needs: security
     runs-on: ubuntu-latest
@@ -51,35 +54,44 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ---- Docker login ----
+      # DockerHub Login
       - name: Docker Login
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # ---- Backend Image ----
+      # Backend Image
       - name: Build & Push Backend
         run: |
           docker build -t $IMAGE_BACKEND:${{ github.sha }} ./backend
-          docker tag $IMAGE_BACKEND:${{ github.sha }} $IMAGE_BACKEND:latest
+
+          docker tag \
+            $IMAGE_BACKEND:${{ github.sha }} \
+            $IMAGE_BACKEND:latest
+
           docker push $IMAGE_BACKEND:${{ github.sha }}
           docker push $IMAGE_BACKEND:latest
 
-      # ---- Frontend Image ----
+      # Frontend Image
       - name: Build & Push Frontend
         run: |
           docker build -t $IMAGE_FRONTEND:${{ github.sha }} ./frontend
-          docker tag $IMAGE_FRONTEND:${{ github.sha }} $IMAGE_FRONTEND:latest
+
+          docker tag \
+            $IMAGE_FRONTEND:${{ github.sha }} \
+            $IMAGE_FRONTEND:latest
+
           docker push $IMAGE_FRONTEND:${{ github.sha }}
           docker push $IMAGE_FRONTEND:latest
 
-# =========================
-# 3. PRODUCTION APPROVAL GATE
-# =========================
+# =========================================
+# 3. PRODUCTION APPROVAL
+# =========================================
   approval:
     needs: build
     runs-on: ubuntu-latest
+
     environment:
       name: production
 
@@ -87,9 +99,9 @@ jobs:
       - name: Manual Approval Gate
         run: echo "Approved for production deployment"
 
-# =========================
-# 4. GITOPS DEPLOY (ARGOCD READY)
-# =========================
+# =========================================
+# 4. GITOPS DEPLOYMENT
+# =========================================
   gitops:
     needs: approval
     runs-on: ubuntu-latest
@@ -100,24 +112,36 @@ jobs:
           repository: malathi-shetty/github-actions-kubernetes-masterclass
           token: ${{ secrets.GITOPS_TOKEN }}
 
-      # ---- Kustomize Setup ----
+      # Setup Kustomize
       - name: Setup Kustomize
         uses: imranismail/setup-kustomize@v2
 
-      # ---- Update Image Tags (GitOps Source of Truth) ----
+      # Update Kubernetes manifests
       - name: Update Kubernetes Manifests
         run: |
           cd k8s/overlays/prod
 
-          kustomize edit set image backend=$IMAGE_BACKEND:${{ github.sha }}
-          kustomize edit set image frontend=$IMAGE_FRONTEND:${{ github.sha }}
+          kustomize edit set image \
+            backend=$IMAGE_BACKEND:${{ github.sha }}
 
-      # ---- Commit back to GitOps repo ----
-      - name: Commit & Push Changes
+          kustomize edit set image \
+            frontend=$IMAGE_FRONTEND:${{ github.sha }}
+
+      # Commit & Push changes safely
+      - name: Commit and Push Changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
           git add .
-          git commit -m "🚀 release ${{ github.sha }} - prod deploy" || echo "No changes"
-          git push
+
+          git commit -m \
+            "🚀 release $GITHUB_SHA - prod deploy" \
+            || echo "No changes to commit"
+
+          for i in 1 2 3; do
+            git pull --rebase origin main && break
+            sleep 5
+          done
+
+          git push origin main
