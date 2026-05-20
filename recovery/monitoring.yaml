@@ -422,7 +422,7 @@ items:
     annotations:
       checksum/config: 5bceeca3808849664f09f642547ce17fdf495522238ef9ce952b20cfa36b7de5
       checksum/sc-dashboard-provider-config: e70bf6a851099d385178a76de9757bb0bef8299da6d8443602590e44f05fdf24
-      checksum/secret: 63f30b24c4b20aaaf89f3629d2916a4c54d0353b481d238b756056f7fe5c6717
+      checksum/secret: 
       kubectl.kubernetes.io/default-container: grafana
     creationTimestamp: "2026-05-19T08:46:08Z"
     generateName: monitoring-grafana-f5977665c-
@@ -2474,7 +2474,7 @@ items:
         annotations:
           checksum/config: 5bceeca3808849664f09f642547ce17fdf495522238ef9ce952b20cfa36b7de5
           checksum/sc-dashboard-provider-config: e70bf6a851099d385178a76de9757bb0bef8299da6d8443602590e44f05fdf24
-          checksum/secret: 63f30b24c4b20aaaf89f3629d2916a4c54d0353b481d238b756056f7fe5c6717
+          checksum/secret: 
           kubectl.kubernetes.io/default-container: grafana
         creationTimestamp: null
         labels:
@@ -3020,7 +3020,7 @@ items:
         annotations:
           checksum/config: 5bceeca3808849664f09f642547ce17fdf495522238ef9ce952b20cfa36b7de5
           checksum/sc-dashboard-provider-config: e70bf6a851099d385178a76de9757bb0bef8299da6d8443602590e44f05fdf24
-          checksum/secret: 63f30b24c4b20aaaf89f3629d2916a4c54d0353b481d238b756056f7fe5c6717
+          checksum/secret: 
           kubectl.kubernetes.io/default-container: grafana
         creationTimestamp: null
         labels:
