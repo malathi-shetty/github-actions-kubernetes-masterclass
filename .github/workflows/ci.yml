@@ -1,4 +1,4 @@
-name: CI
+name: CI-CD (Docker + GitOps Production Pipeline)
 
 on:
   push:
@@ -14,27 +14,36 @@ permissions:
 jobs:
 
 # =========================
-# 1. SECURITY GATE (BLOCK BAD CODE)
+# 1. SECURITY GATE (FAIL FAST)
 # =========================
   security:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Trivy FS Scan
+      # ---- Trivy (container + FS scan) ----
+      - name: Trivy Filesystem Scan
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
           severity: CRITICAL,HIGH
-          exit-code: 0
+          exit-code: 1
 
+      # ---- Gitleaks (secret detection) ----
       - name: Gitleaks Scan
         run: |
-          docker run --rm -v ${{ github.workspace }}:/path \
-          zricethezav/gitleaks:latest detect --source="/path"
+          docker run --rm \
+            -v ${{ github.workspace }}:/path \
+            zricethezav/gitleaks:latest \
+            detect \
+            --source=/path \
+            --exit-code 1 \
+            --redact \
+            --verbose
 
 # =========================
-# 2. BUILD + PUSH
+# 2. BUILD + DOCKER PUSH
 # =========================
   build:
     needs: security
@@ -43,34 +52,44 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: docker/login-action@v4
+      # ---- Docker login ----
+      - name: Docker Login
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # ---- Backend Image ----
       - name: Build & Push Backend
         run: |
           docker build -t $IMAGE_BACKEND:${{ github.sha }} ./backend
+          docker tag $IMAGE_BACKEND:${{ github.sha }} $IMAGE_BACKEND:latest
           docker push $IMAGE_BACKEND:${{ github.sha }}
+          docker push $IMAGE_BACKEND:latest
 
+      # ---- Frontend Image ----
       - name: Build & Push Frontend
         run: |
           docker build -t $IMAGE_FRONTEND:${{ github.sha }} ./frontend
+          docker tag $IMAGE_FRONTEND:${{ github.sha }} $IMAGE_FRONTEND:latest
           docker push $IMAGE_FRONTEND:${{ github.sha }}
+          docker push $IMAGE_FRONTEND:latest
 
 # =========================
-# 3. MANUAL APPROVAL (PROD GATE)
+# 3. PRODUCTION APPROVAL GATE
 # =========================
   approval:
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: production
+
     steps:
-      - run: echo "Approved"
+      - name: Manual Approval Gate
+        run: echo "Approved for production deployment"
 
 # =========================
-# 4. GITOPS DEPLOY
+# 4. GITOPS DEPLOY (ARGOCD READY)
 # =========================
   gitops:
     needs: approval
@@ -82,19 +101,24 @@ jobs:
           repository: malathi-shetty/github-actions-kubernetes-masterclass
           token: ${{ secrets.GITOPS_TOKEN }}
 
+      # ---- Kustomize Setup ----
       - name: Setup Kustomize
         uses: imranismail/setup-kustomize@v2
 
-      - name: Update Images
+      # ---- Update Image Tags (GitOps Source of Truth) ----
+      - name: Update Kubernetes Manifests
         run: |
           cd k8s/overlays/prod
+
           kustomize edit set image backend=$IMAGE_BACKEND:${{ github.sha }}
           kustomize edit set image frontend=$IMAGE_FRONTEND:${{ github.sha }}
 
-      - name: Commit & Push
+      # ---- Commit back to GitOps repo ----
+      - name: Commit & Push Changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+
           git add .
-          git commit -m "release ${{ github.sha }} [skip ci]" || echo "no changes"
+          git commit -m "🚀 release ${{ github.sha }} - prod deploy" || echo "No changes"
           git push
