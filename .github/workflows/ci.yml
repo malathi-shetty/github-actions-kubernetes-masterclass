@@ -3,12 +3,6 @@ name: CI
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'k8s/**'
-
-concurrency:
-  group: production-${{ github.ref }}
-  cancel-in-progress: true
 
 env:
   IMAGE_BACKEND: ${{ secrets.DOCKERHUB_USERNAME }}/skillpulse-backend
