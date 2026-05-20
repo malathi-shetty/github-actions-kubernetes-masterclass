@@ -61,9 +61,10 @@ help:
 	@echo ""
 
 	@echo "Kind Cluster:"
-	@echo "  make cluster-create"
+	@echo "Bootstrap only:"
+	@echo "  make cluster-up"
+	@echo "  make bootstrap-argocd"
 	@echo "  make cluster-info"
-	@echo "  make clean-k8s"
 	@echo ""
 
 	@echo "Kubernetes:"
@@ -119,6 +120,10 @@ help:
 	@echo "  make clean-k8s"
 	@echo ""
 
+	@echo "SkillPulse GitOps System"
+	@echo "ONLY use git push for deployment"
+	@echo ""
+
 # =========================================
 # LOCAL DEVELOPMENT
 # =========================================
@@ -139,21 +144,35 @@ clean:
 # KIND CLUSTER
 # =========================================
 
-cluster-create:
+# -------------------------
+# BOOTSTRAP (ONE TIME ONLY)
+# -------------------------
+cluster-up:
 	kind create cluster --name $(CLUSTER) || true
+	kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+	kubectl create namespace $(NAMESPACE) --dry-run=client -o yaml | kubectl apply -f -
+
+bootstrap-argocd:
+	kubectl apply -n argocd \
+		-f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+	kubectl apply -f k8s/argocd/application.yaml
+
+# -------------------------
+# CLEANUP
+# -------------------------
+cluster-down:
+	kind delete cluster --name $(CLUSTER)
+
+clean:
+	echo "No manual deploy. GitOps only."
 
 cluster-info:
 	kubectl cluster-info
 
-clean-k8s:
-	kind delete cluster --name $(CLUSTER)
 
-up:
-	kind create cluster --config k8s/kind-config.yaml
-	kubectl apply -k k8s/overlays/dev
 
-down:
-	kind delete cluster
+
 
 # =========================================
 # DOCKER BUILD
