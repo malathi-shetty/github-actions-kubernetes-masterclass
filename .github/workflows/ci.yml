@@ -209,8 +209,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: aiops-report
 
-    environment:
-      name: production
+  #  environment:
+  #    name: production
 
     steps:
       - name: Approval Gate
